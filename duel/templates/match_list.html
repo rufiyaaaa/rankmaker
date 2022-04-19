@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}試合結果一覧 | ランクメーカーDUEL{% endblock %}
+
+{% block active_match_list %}active{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/clean-blog.css' %}">
+{% endblock %}
+
+{% block contents %}
+<div class="container px-4 px-lg-5 my-div-style">
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xl-7">
+            <h1>{{ team }}の試合結果一覧</h1>
+            <div class="d-flex justify-content-end mb-4">
+                <a class="btn btn-primary float-right" href="{% url 'duel:match_create' %}">試合結果登録</a>
+            </div>
+            {% for match in match_list %}
+            <div class="post-preview">
+                <a href="{% url 'duel:match_detail' match.pk %}"><!--pk=プライマリキー-->
+                    <h2 class="post-subtitle">
+                        {{ match.pk }} : {{ match.winner }} VS {{ match.loser }}
+                    </h2>
+                </a>
+                <p class="post-meta">{{ match.date }}　{{ match.winner }}:{{ match.winner_old_rating_disp }}
+                    →{{ match.winner_new_rating_disp }}　{{ match.loser }}:{{ match.loser_old_rating_disp }}→{{ match.loser_new_rating_disp }}</p>
+            </div>
+            <hr class="my-4">
+            {% empty %}
+            <p>試合結果がありません。</p>
+            {% endfor %}
+
+            <!--  ページネーション処理  -->
+            {% if is_paginated %}
+            <ul class="pagination">
+                <!--前ページへのリンク-->
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a href="?page={{ page_obj.previous_page_number }}" class="page-link">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+
+                <!--ページ数表示-->
+                {% for page_num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == page_num %}
+                    <li class="page-item active">
+                        <a href="#" class="page-link">{{page_num}}</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a href="?page={{ page_num }}" class="page-link">{{page_num}}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+
+                <!--次ページへのリンク-->
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a href="?page={{ page_obj.next_page_number }}" class="page-link">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

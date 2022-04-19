@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}対戦結果詳細 | ランクメーカーDUEL{% endblock %}
+
+{% block active_match_list %}active{% endblock %}
+
+{% block contents %}
+<div class="container my-div-style">
+    <div class="row">
+        <div class="col-3">
+            <strong>勝者ID</strong>
+        </div>
+        <div class="col-9">
+            {{ object.winner }}
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="row">
+        <div class="col-3">
+            <strong>敗者ID</strong>
+        </div>
+        <div class="col-9">
+            {{ object.loser }}
+        </div>
+    </div>
+
+    <hr>
+
+        <div class="row">
+        <div class="col-3">
+            <strong>引き分け</strong>
+        </div>
+        <div class="col-9">
+            {{ object.even }}
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="row">
+        <div class="col-3">
+            <strong>試合日時</strong>
+        </div>
+        <div class="col-9">
+            {{ object.date }}
+        </div>
+    </div>
+
+        <hr>
+
+
+    <a href="{% url 'duel:match_update' object.pk %}" class="btn btn-success mt-5 mb-3">編集</a>
+    <a href="{% url 'duel:match_delete' object.pk %}" class="btn btn-danger mt-5 mb-3 ml-2">削除</a>
+    <a href="{% url 'duel:match_list' %}" class="btn btn-secondary mt-5 mb-3">戻る</a>
+</div>
+{% endblock %}

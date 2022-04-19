@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}強さを比較しよう｜ランクメーカーDUEL{% endblock %}
+
+{% block header %}
+
+{% endblock %}
+
+{% block contents %}
+{% if user.is_authenticated %}
+<div class="container px-4 px-lg-5 my-div-style">
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xl-7">
+            <h2>{{ username }}さん、ようこそ</h2>
+            <div>
+                {% if user.have_team %}
+                <table class="table">
+                    <tr>
+                        <th>順位</th>
+                        <th>名前</th>
+                        <th>レーティング</th>
+                    </tr>
+
+                    {% for player in ranking %}
+                    <tr>
+                        <th>{{ forloop.counter }}</th>
+                        <td>{{ player.name }}</td>
+                        <td>{{ player.latest_rating }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="3">メンバーが登録されていません。<a href="{% url 'duel:player_create' %}">メンバーの登録はこちらから。</a></td></tr>
+                    {% endfor %}
+                </table>
+                {% else %}
+                <p class="">チームが作成されていません。<br>
+                        <a href="{% url 'duel:team_create' %}">こちらからから作成してください。</a>
+                </p>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
