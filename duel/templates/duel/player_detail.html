@@ -1,0 +1,45 @@
+{% extends 'duel/base.html' %}
+{% load static %}
+
+{% block title %}対戦結果詳細 | ランクメーカーDUEL{% endblock %}
+
+{% block active_player_list %}active{% endblock %}
+
+{% block contents %}
+<div class="container my-div-style">
+    <div class="row">
+        <div class="col-3">
+            <strong>ID</strong>
+        </div>
+        <div class="col-9">
+            {{ object.id }}
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="row">
+        <div class="col-3">
+            <strong>名前</strong>
+        </div>
+        <div class="col-9">
+            {{ object.name }}
+        </div>
+    </div>
+
+        <hr>
+
+    <div class="row">
+        <div class="col-3">
+            <strong>対戦数</strong>
+        </div>
+        <div class="col-9">
+            {{ object.match_exp }}試合
+        </div>
+    </div>
+
+    <a href="{% url 'duel:player_update' object.pk %}" class="btn btn-success mt-5 mb-3">編集</a>
+    <a href="{% url 'duel:player_delete' object.pk %}" class="btn btn-danger mt-5 mb-3 ml-2">削除</a>
+    <a href="{% url 'duel:player_list' %}" class="btn btn-secondary mt-5 mb-3">戻る</a>
+</div>
+{% endblock %}

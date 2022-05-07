@@ -21,7 +21,9 @@ from . import settings_common, settings_dev
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('duel.urls')),
+    path('duel/', include('duel.urls')),
+    path('multi/', include('multi.urls')),
+    path('', include('entrance.urls')),
     path('accounts/', include('allauth.urls')),
 ]
 

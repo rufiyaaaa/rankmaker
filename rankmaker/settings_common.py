@@ -35,6 +35,8 @@ INSTALLED_APPS = [
 
     'duel.apps.DuelConfig',
     'accounts.apps.AccountsConfig',
+    'multi.apps.MultiConfig',
+    'entrance.apps.EntranceConfig',
 
     'django.contrib.sites',
     'allauth',
@@ -163,8 +165,8 @@ ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_EMAIL_REQUIRED = True
 
 # ログイン／ログアウト後の遷移先を設定
-LOGIN_REDIRECT_URL = 'duel:home'
-ACCOUNT_LOGOUT_REDIRECT_URL = 'duel:index'
+LOGIN_REDIRECT_URL = 'entrance:index'
+ACCOUNT_LOGOUT_REDIRECT_URL = 'entrance:index'
 
 # ログアウトリンクのクリック一発でログアウトする設定
 ACCOUNT_LOGOUT_ON_GET = True

@@ -9,6 +9,7 @@ class Team(models.Model):
 
     name = models.CharField(verbose_name='本文', max_length=50, blank=True, null=True)
     est_date = models.DateTimeField(verbose_name='登録日', auto_now_add=True)
+    description = models.TextField(verbose_name='説明', max_length=500, blank=True, null=True)
 
     class Meta:
         verbose_name_plural = 'Team'
@@ -37,8 +38,8 @@ class Player(models.Model):
 
 class Affiliation(models.Model):
     """所属モデル"""
-    user = models.ForeignKey(CustomUser, verbose_name='ユーザー', on_delete=models.PROTECT, related_name="rel_user")
-    team = models.ForeignKey(Team, verbose_name='チーム', on_delete=models.PROTECT, related_name="rel_team")
+    user = models.ForeignKey(CustomUser, verbose_name='ユーザー', on_delete=models.PROTECT, related_name="duel_affl_user")
+    team = models.ForeignKey(Team, verbose_name='チーム', on_delete=models.PROTECT, related_name="duel_affl_team")
 
     class Meta:
         verbose_name_plural = 'Affiliations'
@@ -56,6 +57,7 @@ class Match(models.Model):
     loser = models.ForeignKey(Player, verbose_name='敗者', on_delete=models.PROTECT, related_name="Loser_ID")
     even = models.BooleanField(verbose_name='引き分け')
     date = models.DateTimeField(verbose_name='試合日時', default=timezone.now)
+    comment = models.TextField(verbose_name='コメント', blank=True, null=True)
 
     class Meta:
         verbose_name_plural = 'Match'

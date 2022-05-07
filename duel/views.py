@@ -1,7 +1,7 @@
 import logging
 from django.urls import reverse_lazy
 from django.views import generic
-from .forms import InquiryForm, MatchCreateForm, PlayerCreateForm, TeamCreateForm, TeamConfigForm
+from .forms import MatchCreateForm, PlayerCreateForm, TeamCreateForm, TeamConfigForm
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -13,52 +13,29 @@ from accounts.models import CustomUser
 logger = logging.getLogger(__name__)
 
 
-class IndexView(generic.TemplateView):
-    template_name = "index.html"
-
-
 class HomeView(LoginRequiredMixin, generic.TemplateView):
-    template_name = "home.html"
+    template_name = "duel/home.html"
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['username'] = self.request.user
-        affl = Affiliation.objects.get(user=self.request.user)
-        context['team'] = affl.team
 
         if Affiliation.objects.filter(user=self.request.user).count() != 0:
             affl = Affiliation.objects.get(user=self.request.user)
             refresh_ratings(affl.team)
             players = Player.objects.filter(team=affl.team).order_by('-latest_rating')
             context['ranking'] = players
+            context['team'] = affl.team
         else:
             context['ranking'] = Player.objects.none()
 
         return context
 
 
-class InquiryView(generic.FormView):
-    template_name = "inquiry.html"
-    form_class = InquiryForm
-    success_url = reverse_lazy('duel:inquiry')
-
-    def form_valid(self, form):
-        form.send_email()
-        messages.success(self.request, 'メッセージを送信しました。')
-        logger.info('Inquiry sent by {}'.format(form.cleaned_data['name']))
-        return super().form_valid(form)
-
-
 class MatchListView(LoginRequiredMixin, generic.ListView):
     model = Match
-    template_name = 'match_list.html'
+    template_name = 'duel/match_list.html'
     paginate_by = 5
-
-    def get_context_data(self, **kwargs):
-        affl = Affiliation.objects.get(user=self.request.user)
-        context = super().get_context_data(**kwargs)
-        context['team'] = affl.team
-        return context
 
     def get_queryset(self):
         affl = Affiliation.objects.get(user=self.request.user)
@@ -76,18 +53,18 @@ class MatchListView(LoginRequiredMixin, generic.ListView):
 
 class MatchDetailView(LoginRequiredMixin, generic.DetailView):
     model = Match
-    template_name = 'match_detail.html'
+    template_name = 'duel/match_detail.html'
 
-    def get_context_data(self, **kwargs):
-        affl = Affiliation.objects.get(user=self.request.user)
-        context = super().get_context_data(**kwargs)
-        context['team'] = affl.team
-        return context
+#    def get_context_data(self, **kwargs):
+#        affl = Affiliation.objects.get(user=self.request.user)
+#        context = super().get_context_data(**kwargs)
+#        context['team'] = affl.team
+#        return context
 
 
 class MatchCreateView(LoginRequiredMixin, generic.CreateView):
     model = Match
-    template_name = 'match_create.html'
+    template_name = 'duel/match_create.html'
     form_class = MatchCreateForm
     success_url = reverse_lazy('duel:match_list')
 
@@ -124,7 +101,7 @@ class MatchCreateView(LoginRequiredMixin, generic.CreateView):
 
 class MatchUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Match
-    template_name = 'match_update.html'
+    template_name = 'duel/match_update.html'
     form_class = MatchCreateForm
 
     def get_form_kwargs(self, *args, **kwargs):
@@ -151,7 +128,7 @@ class MatchUpdateView(LoginRequiredMixin, generic.UpdateView):
 
 class MatchDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Match
-    template_name = 'match_delete.html'
+    template_name = 'duel/match_delete.html'
     success_url = reverse_lazy('duel:match_list')
 
     def get_context_data(self, **kwargs):
@@ -167,7 +144,7 @@ class MatchDeleteView(LoginRequiredMixin, generic.DeleteView):
 
 class PlayerListView(LoginRequiredMixin, generic.ListView):
     model = Player
-    template_name = 'player_list.html'
+    template_name = 'duel/player_list.html'
     paginate_by = 30
 
     def get_queryset(self):
@@ -186,7 +163,7 @@ class PlayerListView(LoginRequiredMixin, generic.ListView):
 
 class PlayerDetailView(LoginRequiredMixin, generic.DetailView):
     model = Player
-    template_name = 'player_detail.html'
+    template_name = 'duel/player_detail.html'
 
     def get_context_data(self, **kwargs):
         affl = Affiliation.objects.get(user=self.request.user)
@@ -197,7 +174,7 @@ class PlayerDetailView(LoginRequiredMixin, generic.DetailView):
 
 class PlayerCreateView(LoginRequiredMixin, generic.CreateView):
     model = Player
-    template_name = 'player_create.html'
+    template_name = 'duel/player_create.html'
     form_class = PlayerCreateForm
     success_url = reverse_lazy('duel:player_list')
 
@@ -222,7 +199,7 @@ class PlayerCreateView(LoginRequiredMixin, generic.CreateView):
 
 class PlayerUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Player
-    template_name = 'player_update.html'
+    template_name = 'duel/player_update.html'
     form_class = PlayerCreateForm
 
     def get_context_data(self, **kwargs):
@@ -245,7 +222,7 @@ class PlayerUpdateView(LoginRequiredMixin, generic.UpdateView):
 
 class PlayerDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Player
-    template_name = 'player_delete.html'
+    template_name = 'duel/player_delete.html'
     success_url = reverse_lazy('duel:player_list')
 
     def get_context_data(self, **kwargs):
@@ -261,15 +238,9 @@ class PlayerDeleteView(LoginRequiredMixin, generic.DeleteView):
 
 class TeamCreateView(LoginRequiredMixin, generic.CreateView):
     model = Team
-    template_name = 'team_create.html'
+    template_name = 'duel/team_create.html'
     form_class = TeamCreateForm
     success_url = reverse_lazy('duel:player_list')
-
-    def get_context_data(self, **kwargs):
-        affl = Affiliation.objects.get(user=self.request.user)
-        context = super().get_context_data(**kwargs)
-        context['team'] = affl.team
-        return context
 
     def form_valid(self, form):  # formのバリデーションに問題がなければ実行
         team = form.save(commit=False)
@@ -278,7 +249,7 @@ class TeamCreateView(LoginRequiredMixin, generic.CreateView):
         affl.team = team
         affl.user = self.request.user
         affl.save()
-        self.request.user.have_team = True
+        self.request.user.have_duel_team = True
         self.request.user.save()
 
         messages.success(self.request, "チームを作成しました。")
@@ -291,17 +262,18 @@ class TeamCreateView(LoginRequiredMixin, generic.CreateView):
 
 class TeamConfigView(LoginRequiredMixin, generic.UpdateView):
     model = Team
-    template_name = 'team_config.html'
+    template_name = 'duel/team_config.html'
     form_class = TeamConfigForm
+    success_url = reverse_lazy('duel:home')
+
+    def get_object(self, queryset=None):
+        return Affiliation.objects.get(user=self.request.user).team
 
     def get_context_data(self, **kwargs):
         affl = Affiliation.objects.get(user=self.request.user)
         context = super().get_context_data(**kwargs)
         context['team'] = affl.team
         return context
-
-    def get_success_url(self):
-        return reverse_lazy('duel:home')
 
     def form_valid(self, form):
         messages.success(self.request, 'チーム設定を更新しました。')
