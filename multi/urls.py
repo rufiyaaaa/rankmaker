@@ -5,6 +5,7 @@ from . import views
 app_name = 'multi'
 urlpatterns = [
     path('home/', views.HomeView.as_view(), name="home"),
+    path('ranking/', views.RankingView.as_view(), name="ranking"),
     path('game-list/', views.GameListView.as_view(), name="game_list"),
     path('game-detail/<int:pk>', views.GameDetailView.as_view(), name="game_detail"),
     path('game-create/', views.GameCreateView.as_view(), name="game_create"),
@@ -18,4 +19,7 @@ urlpatterns = [
     path('player-delete/<int:pk>/', views.PlayerDeleteView.as_view(), name="player_delete"),
     path('team-create/', views.TeamCreateView.as_view(), name="team_create"),
     path('team-config/', views.TeamConfigView.as_view(), name="team_config"),
+    path('team-delete/<int:pk>', views.TeamDeleteView.as_view(), name="team_delete"),
+    path('notice-list/', views.NoticeListView.as_view(), name="notice_list"),
+    path('notice/<int:pk>', views.NoticeDetailView.as_view(), name="notice"),
 ]

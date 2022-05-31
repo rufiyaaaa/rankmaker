@@ -9,22 +9,10 @@
 <header class="masthead text-center text-white">
     <div class="masthead-content">
         <div class="container">
-            <h1 class="masthead-heading mb-0">DUEL</h1>
-            <h2 class="masthead-subheading mb-0">1対1専用</h2>
-            <a href="{% url 'duel:home' %}" class="btn btn-primary btn-xl rounded-pill mt-3">チームを作る</a>
-        </div>
-    </div>
-    <div class="bg-circle-1 bg-circle"></div>
-    <div class="bg-circle-2 bg-circle"></div>
-    <div class="bg-circle-3 bg-circle"></div>
-    <div class="bg-circle-4 bg-circle"></div>
-</header>
-<header class="masthead text-center text-white">
-    <div class="masthead-content">
-        <div class="container">
-            <h1 class="masthead-heading mb-0">BR</h1>
-            <h2 class="masthead-subheading mb-0">多人数ゲーム専用</h2>
-            <a href="{% url 'multi:home' %}" class="btn btn-primary btn-xl rounded-pill mt-3">チームを作る</a>
+            <h1 class="masthead-heading mb-0">ランクメーカー</h1>
+            <h4 class="masthead-subheading mb-0">部内ランキングを作ろう</h4>
+            <a href="{% url 'account_login' %}" class="btn btn-primary btn-xl rounded-pill mt-3">はじめる</a>
+            <a href="{% url 'entrance:app_detail' %}" class="btn btn-secondary btn-xl rounded-pill mt-3">詳しく知る</a>
         </div>
     </div>
     <div class="bg-circle-1 bg-circle"></div>
@@ -35,6 +23,30 @@
 
 {% endblock %}
 
-{% block contents %}
-
+{% block contents%}
+    <h2 class="bg-light">はじめに</h2>
+<p class="my-4">
+    ランクメーカーは、部内ランキング、サークル内ランキングを計算するアプリです。</p>
+    <p class="my-4">
+    このアプリはクイズサークル内でのランキングを計算するアプリとして開発されました。<br>
+    しかし、クイズだけでなく、例えばゴルフやケイリン、キンボールのような多チーム同時対戦スポーツ、
+    「カタン」やその他ボードゲームのような多プレイヤー同時対戦ゲームでも使用が可能です。
+    また、囲碁や将棋といった１対１ゲーム、テニスや野球と言った１対１スポーツにも当然使用可能です。<br>
+</p>
+<p class="my-4">
+    ランキングやレーティングという仕組みは、時に無用な争いやいざこざを産むことがあり、毛嫌いされることもあります。
+    しかし使い方次第では、ゲーム・スポーツをより楽しめるものにするツールとなると確信しています。<br>
+    例えばランキングをもとにリーグを分け、より実力の近い相手と対戦するとか。
+    チーム内で実力的に劣っているプレイヤーにとっては、ランキングを１つ上げることがマイルストーンとなりうるかもしれません。
+</p>
+<p class="my-4">
+    現時点ではまだ開発中のサービスであり、それらのメリットを完全には引き出し切れていない状況です。
+    このクローズドベータテストでは、みなさんからのアドバイスをいただいて、より実用的なサービスとすることを目指しています。
+    「こんな機能があったら使いやすい」「こんな表現をしてほしい」など、ご意見・ご感想・ご提案があれば、どしどしお寄せください！
+</p>
+    <p class="text-end">
+        <a href="{% url 'entrance:app_detail' %}">
+            ＞サービスの詳しい紹介はこちらから
+        </a>
+</p>
 {% endblock %}

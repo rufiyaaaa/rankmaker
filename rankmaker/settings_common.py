@@ -165,7 +165,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_EMAIL_REQUIRED = True
 
 # ログイン／ログアウト後の遷移先を設定
-LOGIN_REDIRECT_URL = 'entrance:index'
+LOGIN_REDIRECT_URL = 'multi:home'
 ACCOUNT_LOGOUT_REDIRECT_URL = 'entrance:index'
 
 # ログアウトリンクのクリック一発でログアウトする設定

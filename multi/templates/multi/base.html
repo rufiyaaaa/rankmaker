@@ -29,7 +29,8 @@
     <!-- Navigation-->
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
         <div class="container px-5">
-            <a class="navbar-brand" href="{% if user.is_authenticated %}{% url 'multi:home' %}{% else %}{% url 'multi:home' %}{% endif %}">ランクメーカーMULTI</a>
+            <a class="navbar-brand"
+               href="{% if user.is_authenticated %}{% url 'multi:home' %}{% else %}{% url 'multi:home' %}{% endif %}">ランクメーカー</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
                     aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -39,13 +40,23 @@
                     {% if user.is_authenticated %}
                     {% if user.have_multi_team %}
                     <li class="nav-item">
-                        <a href="{% url 'multi:game_list' %}" class="nav-link {% block active_game_list %}{% endblock %}">対戦結果一覧</a>
+                        <a href="{% url 'multi:ranking' %}" class="nav-link {% block active_ranking %}{% endblock %}">ランキング</a>
                     </li>
                     <li class="nav-item">
-                        <a href="{% url 'multi:player_list' %}" class="nav-link {% block active_player_list %}{% endblock %}">メンバー一覧</a>
+                        <a href="{% url 'multi:game_list' %}"
+                           class="nav-link {% block active_game_list %}{% endblock %}">対戦結果一覧</a>
                     </li>
                     <li class="nav-item">
-                        <a href="{% url 'multi:team_config' %}" class="nav-link {% block active_team_config %}{% endblock %}">チーム設定</a>
+                        <a href="{% url 'multi:player_list' %}"
+                           class="nav-link {% block active_player_list %}{% endblock %}">メンバー一覧</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'multi:team_config' %}"
+                           class="nav-link {% block active_team_config %}{% endblock %}">チーム設定</a>
+                    </li>
+                                        <li class="nav-item">
+                        <a href="{% url 'multi:notice_list' %}"
+                           class="nav-link {% block active_notice_list %}{% endblock %}">お知らせ</a>
                     </li>
                     {% endif %}
                     {% endif %}
@@ -60,11 +71,12 @@
                         <a class="nav-link {% block activate_signup %}{% endblock %}" href="{% url 'account_signup' %}">新規登録</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% block activate_login %}{% endblock %}"  href="{% url 'account_login' %}">ログイン</a>
+                        <a class="nav-link {% block activate_login %}{% endblock %}" href="{% url 'account_login' %}">ログイン</a>
                     </li>
                     {% endif %}
                     <li class="nav-item">
-                        <a class="nav-link {% block active_inquiry %}{% endblock %}" href="{% url 'entrance:inquiry' %}">ご意見</a>
+                        <a class="nav-link {% block active_inquiry %}{% endblock %}"
+                           href="{% url 'entrance:inquiry' %}">ご意見</a>
                     </li>
                 </ul>
             </div>
@@ -73,23 +85,23 @@
 
     {% block header %}{% endblock %}
 
-    {% if messages %}
-        <div class="container my-div-style">
-            <div class="row">
-                <ul class="messages" style="list-style: none;">
-                    {% for message in messages %}
 
-                    <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>
-                        {{ message }}
-                    </li>
+    <div class="container my-div-style">
+        {% if messages %}
+        <div class="row">
+            <ul class="messages" style="list-style: none;">
+                {% for message in messages %}
 
-                    {% endfor %}
-                </ul>
-            </div>
+                <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>
+                    {{ message }}
+                </li>
+                {% endfor %}
+            </ul>
         </div>
-    {% endif %}
+        {% endif %}
 
     {% block contents %}{% endblock %}
+    </div>
 
     <!-- Footer-->
     <footer class="py-5 bg-black">
@@ -100,5 +112,14 @@
     <!-- Bootstrap core JS-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
 </body>
 </html>

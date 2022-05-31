@@ -15,12 +15,10 @@ class PlayerCreateForm(forms.ModelForm):
 
     class Meta:
         model = Player
-        fields = ('name',)
+        fields = ('name', 'inactive')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs['class'] = 'form-control'
 
 
 class TeamCreateForm(forms.ModelForm):
@@ -48,24 +46,31 @@ class TeamConfigForm(forms.ModelForm):
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
 
-"""
-class GCTestForm(forms.Form):
-    pass
-"""
-
 
 class GameCreateForm(forms.ModelForm):
-    name = forms.CharField(label='タイトル', max_length=50, required=False)
-    date = forms.DateTimeField(label='試合日時(YYYY-MM-DD HH:MM)', required=True, initial=make_aware(datetime.datetime.now()))
+    name = forms.CharField(label='試合タイトル', max_length=50, required=False)
+    date = forms.DateTimeField(
+        label='試合日時(YYYY-MM-DD HH:MM)',
+        required=True,
+        initial=make_aware(datetime.datetime.now())
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         initial = kwargs.pop('initial')
-        q_set = initial.pop('q_set')
-        for player in q_set:
+        players = initial.pop('players')
+        participants = initial.pop('initial_value')
+        for player in players:
             self.fields[player.pk] = forms.IntegerField(
                 label=player.name+"さんの順位",
-                initial="",
+                initial=None,
+                required=False,
+                validators=[MinValueValidator(1)]
+            )
+        for participant in participants:
+            self.fields[participant.player.pk] = forms.IntegerField(
+                label=participant.player.name+"さんの順位",
+                initial=participant.rank,
                 required=False,
                 validators=[MinValueValidator(1)]
             )
@@ -82,9 +87,13 @@ class GameCreateForm(forms.ModelForm):
     def clean(self):
         input_data = self.data
 
-        date = input_data['date']
-        if Game.objects.filter(date=date):
-            raise ValidationError('同時に開催されている試合があるようです。時刻をずらしてください。')
+        date = make_aware(datetime.datetime.strptime(input_data['date'], '%Y-%m-%d %H:%M:%S'))
+        if not self.instance:
+            if Game.objects.filter(date=date):
+                raise ValidationError('同時に開催されている試合があるようです。時刻をずらしてください。')
+
+        if date > make_aware(datetime.datetime.now()):
+            raise ValidationError('未来の結果を入力することはできません')
 
         not_none = 0
         ranks = []
@@ -112,8 +121,4 @@ class GameCreateForm(forms.ModelForm):
 
 
 
-# ParticipantFormset = forms.inlineformset_factory(
-#     Game, Participant, fields=('player', 'rank'),
-#     extra=10, max_num=30, can_delete=False
-# )
 

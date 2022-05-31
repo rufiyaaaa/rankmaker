@@ -1,0 +1,31 @@
+{% extends 'multi/base.html' %}
+{% load static %}
+
+{% block title %}{{ object.title }}　| ランクメーカー{% endblock %}
+
+{% block active_notice_list %}active{% endblock %}
+
+{% block contents %}
+    <div class="row">
+        <div class="col-3">
+            <strong>タイトル</strong>
+        </div>
+        <div class="col-9">
+            {{ object.title }}
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="row">
+        <div class="col-3">
+            <strong>本文</strong>
+        </div>
+        <div class="col-9">
+            {{ object.text }}
+        </div>
+    </div>
+    <hr>
+
+    <a href="{% url 'multi:notice_list' %}" class="btn btn-secondary mt-5 mb-3">お知らせ一覧へ</a>
+{% endblock %}

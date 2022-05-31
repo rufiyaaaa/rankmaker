@@ -1,7 +1,7 @@
 {% extends 'duel/base.html' %}
 {% load static %}
 
-{% block title %}試合結果一覧 | ランクメーカーDUEL{% endblock %}
+{% block title %}対戦結果一覧 | ランクメーカーDUEL{% endblock %}
 
 {% block active_match_list %}active{% endblock %}
 
@@ -13,9 +13,9 @@
 <div class="container px-4 px-lg-5 my-div-style">
     <div class="row gx-4 gx-lg-5 justify-content-center">
         <div class="col-md-10 col-lg-8 col-xl-7">
-            <h1>{{ team }}の試合結果一覧</h1>
+            <h1>{{ team }}の対戦結果一覧</h1>
             <div class="d-flex justify-content-end mb-4">
-                <a class="btn btn-primary float-right" href="{% url 'duel:match_create' %}">試合結果登録</a>
+                <a class="btn btn-primary float-right" href="{% url 'duel:match_create' %}">対戦結果登録</a>
             </div>
             {% for match in match_list %}
             <div class="post-preview">
@@ -29,7 +29,7 @@
             </div>
             <hr class="my-3">
             {% empty %}
-            <p>試合結果がありません。</p>
+            <p>対戦結果がありません。</p>
             {% endfor %}
 
             <!--  ページネーション処理  -->

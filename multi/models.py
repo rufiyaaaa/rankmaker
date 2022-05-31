@@ -29,7 +29,7 @@ class Player(models.Model):
     team = models.ForeignKey(Team, verbose_name='所属', on_delete=models.CASCADE)
     name = models.CharField(verbose_name='プレイヤー', max_length=40)
     inactive = models.BooleanField(verbose_name='引退', default=False, blank=True)
-    latest_rating = models.FloatField(verbose_name='最新レーティング', default=0)
+    ltst_rating = models.IntegerField(verbose_name='最新レーティング', default=0)
 
     class Meta:
         verbose_name_plural = 'Player'
@@ -38,15 +38,26 @@ class Player(models.Model):
         return Participant.objects.filter(player=self).count()
 
     def latest_rating(self, date):  # Participantを探って最新のレーティングを見つける
+        print(self.name + "の直近レーティングを探索。基準日時は" + str(date))
         records = Participant.objects.filter(player=self)
+        date_cursor = date
         latest_participant = records.first()
         for record in records:
-            if latest_participant.game.date < record.game.date < date:
+            if record.game.date < date_cursor:
+                date_cursor = record.game.date
                 latest_participant = record
-        if latest_participant.game.date < date:
-            return float(latest_participant.new_rating)
-        else:
+
+        if date_cursor == date:
+            print("基準日時以前の記録が見つかりません。初期値である1500を適用します。")
             return 1500.0
+        else:
+            for record in records:
+                if record.game.date < date:
+                    if date_cursor < record.game.date:
+                        date_cursor = record.game.date
+                        latest_participant = record
+            print("該当する記録を発見。日時は" + str(date_cursor))
+            return float(latest_participant.new_rating)
 
     def now_rating(self):
         return self.latest_rating(make_aware(datetime.now()))
@@ -120,4 +131,20 @@ class Rating(models.Model):
         verbose_name_plural = 'Rating'
 
     def __str__(self):
-        return format(self.player.name) + format(self.duel.game.date, "%m%d")
+        return format(self.player.name) + ":" +  format(self.duel.game)
+
+
+class Notice(models.Model):
+    """お知らせ"""
+    category_choices = (
+        (1, 'お知らせ'),
+        (2, '重要'),
+    )
+
+    title = models.CharField(verbose_name='タイトル', max_length=50)
+    text = models.TextField(verbose_name='本文')
+    release_date = models.DateTimeField(verbose_name='公開日', default=datetime.now)
+    category = models.IntegerField(choices=category_choices, default=1)
+
+    def __str__(self):
+        return self.title

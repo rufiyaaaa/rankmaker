@@ -1,12 +1,11 @@
 {% extends 'multi/base.html' %}
 {% load static %}
 
-{% block title %}チーム設定 | ランクメーカーDUEL{% endblock %}
+{% block title %}チーム設定 | ランクメーカー{% endblock %}
 
 {% block active_team_config %}active{% endblock %}
 
 {% block contents %}
-<div class="container my-div-style">
     <div class="row">
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
@@ -17,5 +16,7 @@
             <a href="{% url 'multi:home'%}" class="btn btn-secondary ml-2">キャンセル</a>
         </form>
     </div>
-</div>
+    <div class="ml-auto">
+        <p><a href="{% url 'multi:team_delete' affl.pk %}">チームを削除する</a></p>
+    </div>
 {% endblock %}

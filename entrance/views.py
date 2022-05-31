@@ -13,6 +13,10 @@ class IndexView(generic.TemplateView):
     template_name = "entrance/index.html"
 
 
+class AppDetailView(generic.TemplateView):
+    template_name = "entrance/app_detail.html"
+
+
 class InquiryView(generic.FormView):
     template_name = "entrance/inquiry.html"
     form_class = InquiryForm

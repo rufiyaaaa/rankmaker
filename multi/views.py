@@ -1,14 +1,13 @@
 import logging
 import datetime
-import itertools
 from django import forms
 from django.urls import reverse_lazy
 from django.views import generic
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .rating_functions import refresh_rating, duel_registration, participant_registration
-from .models import Affiliation, Player, Game, Duel, Rating, Team, Participant
+from .rating_functions import refresh_rating, separate
+from .models import Affiliation, Player, Game, Team, Participant, Notice
 from .forms import GameCreateForm, PlayerCreateForm, TeamCreateForm, TeamConfigForm
 from django.core.exceptions import ValidationError
 
@@ -22,10 +21,29 @@ class HomeView(LoginRequiredMixin, generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['username'] = self.request.user
+        context['notice'] = Notice.objects.filter(release_date__lte=datetime.datetime.now()).order_by('-release_date')[0:5]
 
         if Affiliation.objects.filter(user=self.request.user).count() != 0:
             affl = Affiliation.objects.get(user=self.request.user)
-            players = Player.objects.filter(team=affl.team)
+            players = Player.objects.filter(team=affl.team).filter(inactive=False).order_by('-ltst_rating')[0:3]
+            context['ranking'] = players
+            context['team'] = affl.team
+        else:
+            context['ranking'] = Player.objects.none()
+
+        return context
+
+
+class RankingView(LoginRequiredMixin, generic.TemplateView):
+    template_name = "multi/ranking.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['username'] = self.request.user
+
+        if Affiliation.objects.filter(user=self.request.user).count() != 0:
+            affl = Affiliation.objects.get(user=self.request.user)
+            players = Player.objects.filter(team=affl.team).filter(inactive=False).order_by('-ltst_rating')
             context['ranking'] = players
             context['team'] = affl.team
         else:
@@ -55,36 +73,12 @@ class GameDetailView(LoginRequiredMixin, generic.DetailView):
     model = Game
     template_name = 'multi/game_detail.html'
 
-"""
-def dynamic(request):
-    content = {}
-    context = {}
-    form_item = {}
+    def get_context_data(self, **kwargs):
+        """Gameに関連するParticipantレコードを渡す"""
+        context = super().get_context_data(**kwargs)
+        context['participants'] = Participant.objects.filter(game=context['game']).order_by('rank')
 
-    qs = []
-    affl = Affiliation.objects.get(user=request.user)
-    players = Player.objects.filter(team=affl.team)
-    for player in players:
-        qs.append({'pk': player.pk, 'name': player.name})
-
-    form_item.update({'name': forms.CharField(label='タイトル', max_length=50, required=False, initial="name")})
-    form_item.update({'date': forms.DateTimeField(label='試合日時(YYYY-MM-DD HH:MM)', required=True,
-                                                  initial=datetime.datetime.now())})
-    for q in qs:
-        form_item.update({format(q['pk']): forms.IntegerField(label=q['name'] + 'さんの順位', required=False)})
-
-    dynamicgameform = type('DynamicGameForm', (GCTestForm,), form_item)
-
-    entry = []
-    if request.method == 'POST':
-
-        else:
-            raise ValidationError('対戦者数は2人以上にしてください')
-
-    dynamicform = dynamicgameform(content)
-    context['game_form'] = dynamicform
-    return render(request, "multi/game_create.html", context)
-"""
+        return context
 
 
 class GameCreateView(LoginRequiredMixin, generic.CreateView):  # 本丸
@@ -95,14 +89,9 @@ class GameCreateView(LoginRequiredMixin, generic.CreateView):  # 本丸
     def get_initial(self):
         affl = Affiliation.objects.get(user=self.request.user)
         initial = super(GameCreateView, self).get_initial()
-        initial['q_set'] = Player.objects.filter(team=affl.team)
+        initial['players'] = Player.objects.filter(team=affl.team).filter(inactive=False)
+        initial['initial_value'] = Participant.objects.none()
         return initial
-
-    # def get_form_kwargs(self, *args, **kwargs):
-    #     kwgs = super(GameCreateView, self).get_form_kwargs(*args, **kwargs)
-    #     affl = Affiliation.objects.get(user=self.request.user)
-    #     kwgs["team"] = affl.team
-    #     return kwgs
 
     def form_valid(self, form):  # formのバリデーションに問題がなければ実行
         # formの情報から、gameを作成し情報を登録
@@ -112,17 +101,7 @@ class GameCreateView(LoginRequiredMixin, generic.CreateView):  # 本丸
         game.save()
 
         # 参加者とその順位から、Duel、Participationを作成
-        rank_data = []
-        for key in form.data:
-            if key != 'csrfmiddlewaretoken' and key != 'date' and key != 'name':
-                if form.data[key] != '':
-                    rank_data.append([key, form.data[key]])
-        rank_data.sort(key=lambda x: x[1])
-        for result in rank_data:
-            participant_registration(result, game)
-            # 仮のRatingレコードも↑で作成(duelを作った時にそれに対して作成するのがスマート）
-        for player_pair in itertools.combinations(rank_data, 2):
-            duel_registration(player_pair, game)
+        separate(form.data, game)
 
         # レーティングの更新処理をする。キーとなる引数は、Game.date
         refresh_rating(game.date, game.team)
@@ -141,56 +120,45 @@ class GameCreateView(LoginRequiredMixin, generic.CreateView):  # 本丸
         return reverse_lazy('multi:game_list')
 
 
-# def create_game(request):
-#     form = GameCreateForm(request.POST or None)
-#     context = {'form': form}
-#     if request.method == 'POST' and form.is_valid():
-#         game = form
-#         formset = ParticipantFormset(request.POST)
-#         if formset.is_valid() and formset_check(formset):  # 本当はis_validに機能を追加したい
-#             resolve_game(formset)
-#             return redirect('multi:home')
-#
-#         # エラーメッセージ付きのformsetをテンプレートに渡せるらしい
-#         else:
-#             context['formset'] = formset
-#
-#     # GETの場合
-#     else:
-#         # 空のformsetをテンプレートに渡す
-#         context['formset'] = ParticipantFormset()
-#
-#     return render(request, 'multi/game_create.html', context)
-
-
 class GameUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Game
     template_name = 'multi/game_update.html'
     form_class = GameCreateForm
 
-    def get_form_kwargs(self, *args, **kwargs):
-        kwgs = super(GameUpdateView, self).get_form_kwargs(*args, **kwargs)
+    def get_initial(self):
         affl = Affiliation.objects.get(user=self.request.user)
-        kwgs["team"] = affl.team
-
-        return kwgs
+        initial = super(GameUpdateView, self).get_initial()
+        initial['players'] = Player.objects.filter(team=affl.team)
+        game = self.object
+        initial['initial_value'] = game.participant_game.all()
+        return initial
 
     def get_success_url(self):
-        return reverse_lazy('multi:duel_update', kwargs={'game_pk': self.kwargs['pk']})
+        return reverse_lazy('multi:game_detail', kwargs={'pk': self.kwargs['pk']})
 
-    def form_valid(self, form):
+    def form_valid(self, form):  # formのバリデーションに問題がなければ実行
+        # formの情報から、gameを作成し情報を登録
         game = form.save(commit=False)
+        affl = Affiliation.objects.get(user=self.request.user)
+        game.team = affl.team
         game.save()
 
-        messages.success(self.request, '対戦結果を更新しました。')
+        # Duel, Participantを一旦全削除
+        game.duel_game.all().delete()
+        game.participant_game.all().delete()
+
+        # 参加者とその順位から、Duel、Participationを作成
+        separate(form.data, game)
+
+        # レーティングの更新処理をする。キーとなる引数は、Game.date
+        refresh_rating(game.date, game.team)
+
+        messages.success(self.request, "対戦結果を登録しました。")
         return super().form_valid(form)
 
     def form_invalid(self, form):
         messages.error(self.request, "対戦結果の更新に失敗しました。")
         return super().form_invalid(form)
-
-
-
 
 
 class GameDeleteView(LoginRequiredMixin, generic.DeleteView):
@@ -205,8 +173,14 @@ class GameDeleteView(LoginRequiredMixin, generic.DeleteView):
         return context
 
     def delete(self, request, *args, **kwargs):
+        pk = self.kwargs['pk']
+        date = Game.objects.get(pk=pk).date
+        team = Game.objects.get(pk=pk).team
         messages.success(self.request, "対戦結果を削除しました。")
-        return super().delete(request, *args, **kwargs)
+        delete = super().delete(request, *args, **kwargs)
+        # レーティングの更新処理をする。
+        refresh_rating(date, team)
+        return delete
 
 
 class PlayerListView(LoginRequiredMixin, generic.ListView):
@@ -337,6 +311,7 @@ class TeamConfigView(LoginRequiredMixin, generic.UpdateView):
     def get_context_data(self, **kwargs):
         affl = Affiliation.objects.get(user=self.request.user)
         context = super().get_context_data(**kwargs)
+        context['affl'] = affl
         context['team'] = affl.team
         return context
 
@@ -349,6 +324,31 @@ class TeamConfigView(LoginRequiredMixin, generic.UpdateView):
         return super().form_invalid(form)
 
 
+class TeamDeleteView(LoginRequiredMixin, generic.DeleteView):
+    model = Affiliation
+    template_name = 'multi/team_delete.html'
+    success_url = reverse_lazy('multi:home')
+
+    # def get_context_data(self, **kwargs):
+    #     affl = Affiliation.objects.get(user=self.request.user)
+    #     context = super().get_context_data(**kwargs)
+    #     context['affl'] = affl
+    #     return context
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, "チームを削除しました。")
+        return super().delete(request, *args, **kwargs)
 
 
+class NoticeDetailView(LoginRequiredMixin, generic.DetailView):
+    model = Notice
+    template_name = 'multi/notice_detail.html'
 
+
+class NoticeListView(LoginRequiredMixin, generic.ListView):
+    model = Notice
+    template_name = 'multi/notice_list.html'
+    paginate_by = 5
+
+    def get_queryset(self):
+        return Notice.objects.all().order_by('-release_date')
