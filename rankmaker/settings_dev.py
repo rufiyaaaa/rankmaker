@@ -21,7 +21,7 @@ LOGGING = {
             'level': 'INFO',
         },
         # Diaryアプリケーションが利用するロガー
-        'duel': {
+        'multi': {
             'handlers': ['console'],
             'level': 'DEBUG',
         },
