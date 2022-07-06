@@ -20,7 +20,8 @@ from django.urls import path, include
 from . import settings_common, settings_dev
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # path('admin/', admin.site.urls),
+    path('kanri/', admin.site.urls),
     path('duel/', include('duel.urls')),
     path('multi/', include('multi.urls')),
     path('', include('entrance.urls')),
