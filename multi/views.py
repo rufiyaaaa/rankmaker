@@ -336,6 +336,8 @@ class TeamDeleteView(LoginRequiredMixin, generic.DeleteView):
     #     return context
 
     def delete(self, request, *args, **kwargs):
+        self.request.user.have_multi_team = False
+        self.request.user.save()
         messages.success(self.request, "チームを削除しました。")
         return super().delete(request, *args, **kwargs)
 
