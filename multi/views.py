@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .rating_functions import refresh_rating, separate
 from .models import Affiliation, Player, Game, Team, Participant, Notice
-from .forms import GameCreateForm, PlayerCreateForm, TeamCreateForm, TeamConfigForm
+from .forms import GameCreateForm, PlayerCreateForm, TeamCreateForm, TeamConfigForm, BatchPlayerCreateForm
 from django.core.exceptions import ValidationError
 
 
@@ -209,6 +209,24 @@ class PlayerDetailView(LoginRequiredMixin, generic.DetailView):
         context = super().get_context_data(**kwargs)
         context['team'] = affl.team
         return context
+
+
+class BatchPlayerCreateView(LoginRequiredMixin, generic.FormView):
+    template_name = 'multi/batch_player_create.html'
+    form_class = BatchPlayerCreateForm
+    success_url = reverse_lazy('multi:player_list')
+
+    def form_valid(self, form):  # formのバリデーションに問題がなければ実行
+        affl = Affiliation.objects.get(user=self.request.user)
+        names = form.cleaned_data['name'].splitlines()
+        for name in names:
+            player = Player()
+            player.team = affl.team
+            player.name = name
+            player.save()
+        msg = "メンバーを" + str(len(names)) + "件追加しました。"
+        messages.success(self.request, msg)
+        return super().form_valid(form)
 
 
 class PlayerCreateView(LoginRequiredMixin, generic.CreateView):

@@ -21,6 +21,14 @@ class PlayerCreateForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
 
+class BatchPlayerCreateForm(forms.ModelForm):
+    name = forms.CharField(label='プレイヤー名', widget=forms.Textarea)
+
+    class Meta:
+        model = Player
+        fields = ('name',)
+
+
 class TeamCreateForm(forms.ModelForm):
     name = forms.CharField(label='チーム名', max_length=30)
 

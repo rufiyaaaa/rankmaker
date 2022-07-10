@@ -15,6 +15,7 @@ urlpatterns = [
     path('player-list/', views.PlayerListView.as_view(), name="player_list"),
     path('player-detail/<int:pk>', views.PlayerDetailView.as_view(), name="player_detail"),
     path('player-create/', views.PlayerCreateView.as_view(), name="player_create"),
+    path('batch-player-create/', views.BatchPlayerCreateView.as_view(), name="batch_player_create"),
     path('player-update/<int:pk>/', views.PlayerUpdateView.as_view(), name="player_update"),
     path('player-delete/<int:pk>/', views.PlayerDeleteView.as_view(), name="player_delete"),
     path('team-create/', views.TeamCreateView.as_view(), name="team_create"),

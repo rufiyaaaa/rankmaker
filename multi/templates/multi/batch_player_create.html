@@ -6,16 +6,16 @@
 {% block active_player_list %}active{% endblock %}
 
 {% block contents %}
-<h2>メンバー追加</h2>
-<p>メンバーを追加します。引退済みのメンバーを追加する場合は引退済みにチェックを入れてください。</p>
-        <div class="row">
+<h2>メンバー一括追加</h2>
+<p>複数のメンバーを一括で追加します。名前と名前の間には改行を入力してください。</p>
+    <div class="row">
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <table class="table">
                 {{ form.as_table }}
             </table>
             <button class="btn btn-primary" type="submit">追加</button>
-            <a href="{% url 'multi:batch_player_create' %}">＞一度に複数名追加する場合はこちら</a>
+            <a href="{% url 'multi:player_create' %}">＞一人ずつ追加する場合はこちら</a>
         </form>
     </div>
 {% endblock %}
