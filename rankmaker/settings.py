@@ -12,12 +12,7 @@ INSTALLED_APPS += [
 ]
 
 # 許可するホスト名のリスト
-HostList = os.environ.get('ALLOWED_HOSTS').split(',')
-HostStr = ""
-for host in HostList:
-    HostStr += "'" + host + "', "
-
-ALLOWED_HOSTS =[HostStr]
+ALLOWED_HOSTS =os.environ.get('ALLOWED_HOSTS')
 
 # 静的ファイルを配置する場所
 STATIC_ROOT = '/usr/share/nginx/html/static'
