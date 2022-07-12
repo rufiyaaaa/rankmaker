@@ -70,4 +70,4 @@ LOGGING = {
 }
 
 # ドメイン登録後にCSRFエラーが出るようになったので追加
-CSRF_TRUSTED_ORIGINS = ['https://rankmaker.jp']
+CSRF_TRUSTED_ORIGINS = ['rankmaker.jp']
