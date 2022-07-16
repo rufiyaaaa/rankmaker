@@ -173,6 +173,7 @@ ACCOUNT_LOGOUT_ON_GET = True
 
 # django-allauthが送信するメールの件名に自動付与される接頭辞をブランクにする設定
 ACCOUNT_EMAIL_SUBJECT_PREFIX = ''
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1 # 確認メールの有効期限（日）
 
 # デフォルトのメール送信元を設定
 DEFAULT_FROM_EMAIL = os.environ.get('FROM_EMAIL')

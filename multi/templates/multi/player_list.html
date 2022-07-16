@@ -5,77 +5,79 @@
 
 {% block active_player_list %}active{% endblock %}
 
+{% block toplink %}{% url 'multi:home' %}{% endblock %}
+
 {% block head %}
 {% endblock %}
 
 {% block contents %}
-<div class="px-4 px-lg-5">
-    <div class="row gx-4 gx-lg-5 justify-content-center">
-        <div class="col-md-10 col-lg-8 col-xl-7">
-            <h1>{{ team }}　メンバーリスト</h1>
-            <div class="d-flex justify-content-end mb-4">
-                <a class="btn btn-primary float-right" href="{% url 'multi:player_create' %}">メンバー追加</a>
-            </div>
-            <table class="table">
-                <tr>
-                    <th>id</th>
-                    <th>プレイヤー名</th>
-                    <th>対戦数</th>
-                    <th>最新レーティング</th>
-                    <th></th>
-                </tr>
-                {% for player in player_list %}
-                <tr>
-                    <th>{{ player.id }}</th>
-                    <td>{{ player.name }}{% if player.inactive == True %}<span class="badge bg-secondary mx-1">引退</span>{% endif %}</td>
-                    <td>{{ player.match_exp }}</td>
-                    <td>{{ player.ltst_rating }}</td>
-                    <td><a href="{% url 'multi:player_detail' player.pk %}">詳細</a></td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="3">メンバーが登録されていません。</td>
-                </tr>
-                {% endfor %}
-            </table>
-
-
-            <!--  ページネーション処理  -->
-            {% if is_paginated %}
-            <ul class="pagination">
-                <!--前ページへのリンク-->
-                {% if page_obj.has_previous %}
-                <li class="page-item">
-                    <a href="?page={{ page_obj.previous_page_number }}" class="page-link">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-                {% endif %}
-
-                <!--ページ数表示-->
-                {% for page_num in page_obj.paginator.page_range %}
-                {% if page_obj.number == page_num %}
-                <li class="page-item active">
-                    <a href="#" class="page-link">{{page_num}}</a>
-                </li>
-                {% else %}
-                <li class="page-item">
-                    <a href="?page={{ page_num }}" class="page-link">{{page_num}}</a>
-                </li>
-                {% endif %}
-                {% endfor %}
-
-                <!--次ページへのリンク-->
-                {% if page_obj.has_next %}
-                <li class="page-item">
-                    <a href="?page={{ page_obj.next_page_number }}" class="page-link">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-                {% endif %}
-            </ul>
-            {% endif %}
+<div class="px-4 px-lg-5 row justify-content-center">
+    <div class="col-md-10 col-lg-8 col-xl-7">
+        <h4 class="bg-secondary text-white p-1">{{ team }}　メンバーリスト</h4>
+        <div class="d-flex justify-content-end mb-4">
+            <a class="btn btn-primary" href="{% url 'multi:player_create' %}">メンバー追加</a>
         </div>
+        <table class="table">
+            <tr>
+                <th>id</th>
+                <th>プレイヤー名</th>
+                <th>対戦数</th>
+                <th>最新レーティング</th>
+                <th></th>
+            </tr>
+            {% for player in player_list %}
+            <tr>
+                <th>{{ player.id }}</th>
+                <td>{{ player.name }}{% if player.inactive == True %}<span class="badge bg-secondary mx-1">引退</span>
+                    {% endif %}
+                </td>
+                <td>{{ player.match_exp }}</td>
+                <td>{{ player.ltst_rating }}</td>
+                <td><a href="{% url 'multi:player_detail' player.pk %}">詳細</a></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">メンバーが登録されていません。</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+
+        <!--  ページネーション処理  -->
+        {% if is_paginated %}
+        <ul class="pagination">
+            <!--前ページへのリンク-->
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a href="?page={{ page_obj.previous_page_number }}" class="page-link">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+
+            <!--ページ数表示-->
+            {% for page_num in page_obj.paginator.page_range %}
+            {% if page_obj.number == page_num %}
+            <li class="page-item active">
+                <a href="#" class="page-link">{{page_num}}</a>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a href="?page={{ page_num }}" class="page-link">{{page_num}}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+
+            <!--次ページへのリンク-->
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a href="?page={{ page_obj.next_page_number }}" class="page-link">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

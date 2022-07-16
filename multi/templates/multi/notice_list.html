@@ -3,16 +3,17 @@
 
 {% block title %}お知らせ一覧 | ランクメーカー{% endblock %}
 
+{% block toplink %}{% url 'multi:home' %}{% endblock %}
+
 {% block active_notice_list %}active{% endblock %}
 
 {% block head %}
 {% endblock %}
 
 {% block contents %}
-<div class="px-4 px-lg-5">
-    <div class="row gx-4 gx-lg-5 justify-content-center">
-
-        <h1>お知らせ一覧</h1>
+<div class="px-4 px-lg-5 row justify-content-center">
+    <div class="col-md-10 col-lg-8 col-xl-7">
+        <h4 class="bg-secondary text-white p-1">お知らせ一覧</h4>
         <div class="mt-3">
             <table class="table mb-0">
                 <tr>
@@ -21,13 +22,13 @@
                 <tr>
 
 
-                        <td>
-                            {% if article.category == 1 %}
-                            <span class="badge bg-info">{{ article.get_category_display }}</span>
-                            {% elif article.category == 2 %}
-                            <span class="badge bg-danger">{{ article.get_category_display }}</span>
-                            {% endif %}
-                        </td>
+                    <td>
+                        {% if article.category == 1 %}
+                        <span class="badge bg-info">{{ article.get_category_display }}</span>
+                        {% elif article.category == 2 %}
+                        <span class="badge bg-danger">{{ article.get_category_display }}</span>
+                        {% endif %}
+                    </td>
                     <td><a href="{% url 'multi:notice' article.pk %}">{{ article.title }}</a></td>
                     <td>{{ article.release_date }}</td>
 

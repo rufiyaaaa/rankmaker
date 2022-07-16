@@ -5,18 +5,25 @@
 
 {% block active_team_config %}active{% endblock %}
 
+{% block toplink %}{% url 'multi:home' %}{% endblock %}
+
 {% block contents %}
-    <div class="row">
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <table class="table">
-                {{ form.as_table }}
-            </table>
-            <button class="btn btn-primary" type="submit">更新</button>
-            <a href="{% url 'multi:home'%}" class="btn btn-secondary ml-2">キャンセル</a>
-        </form>
+<div class="px-4 px-lg-5 row justify-content-center">
+    <div class="col-md-10 col-lg-8 col-xl-7">
+        <h4 class="bg-secondary text-white p-1">チーム情報</h4>
+        <div class="row">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <table class="table">
+                    {{ form.as_table }}
+                </table>
+                <button class="btn btn-primary" type="submit">更新</button>
+                <a href="{% url 'multi:home'%}" class="btn btn-secondary ml-2">キャンセル</a>
+            </form>
+        </div>
+        <div class="ml-auto">
+            <p><a href="{% url 'multi:team_delete' affl.pk %}">チームを削除する</a></p>
+        </div>
     </div>
-    <div class="ml-auto">
-        <p><a href="{% url 'multi:team_delete' affl.pk %}">チームを削除する</a></p>
-    </div>
+</div>
 {% endblock %}

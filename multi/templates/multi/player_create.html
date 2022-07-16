@@ -5,17 +5,25 @@
 
 {% block active_player_list %}active{% endblock %}
 
+{% block toplink %}{% url 'multi:home' %}{% endblock %}
+
 {% block contents %}
-<h2>メンバー追加</h2>
-<p>メンバーを追加します。引退済みのメンバーを追加する場合は引退済みにチェックを入れてください。</p>
-        <div class="row">
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <table class="table">
-                {{ form.as_table }}
-            </table>
-            <button class="btn btn-primary" type="submit">追加</button>
+<div class="px-4 px-lg-5 row justify-content-center">
+    <div class="col-md-10 col-lg-8 col-xl-7">
+        <h4 class="bg-secondary text-white p-1">メンバー追加</h4>
+        <p>
+            メンバーを追加します。引退済みのメンバーを追加する場合は引退済みにチェックを入れてください。<br>
             <a href="{% url 'multi:batch_player_create' %}">＞一度に複数名追加する場合はこちら</a>
-        </form>
+        </p>
+        <div class="row">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <table class="table">
+                    {{ form.as_table }}
+                </table>
+                <button class="btn btn-primary" type="submit">追加</button>
+            </form>
+        </div>
     </div>
+</div>
 {% endblock %}

@@ -1,27 +1,32 @@
-{% extends 'account/base.html' %}
+{% extends 'multi/base.html' %}
 
-{% block title %}Confirm sign up｜ランクメーカーDUEL{% endblock %}
+{% block title %}Confirm sign up｜ランクメーカー{% endblock %}
 
 {% block active_signup %}active{% endblock %}
 
+{% block toplink %}{% url 'entrance:index' %}{% endblock %}
+
 {% block contents %}
-<div class="container">
-    <div class="row">
-        <div class="my-div-style">
+<div class="text-center row justify-content-center">
             <h1>ユーザー登録</h1>
 
+    <div class="col-lg-6 col-md-8 border p-3 text-start">
             {% if confirmation %}
 
             <p>ユーザー登録を確定するには、以下のボタンを押してください。</p>
             <form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
                 {% csrf_token %}
+
+            <div class="text-center">
                 <button class="btn btn-primary" type="submit">確定</button>
+            </div>
             </form>
 
             {% else %}
             {% url 'account_email' as email_url %}
 
-            <p>リンクの有効期限が過ぎています。<a href="{{ email_url }}">再申請</a>.</p>
+            <p>リンクの有効期限が過ぎています。</p>
+        <a href="{{ email_url }}" class="btn btn-primary">再申請</a>
 
             {% endif %}
         </div>

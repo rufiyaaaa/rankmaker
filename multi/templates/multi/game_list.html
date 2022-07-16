@@ -3,70 +3,77 @@
 
 {% block title %}対戦結果一覧 | ランクメーカー{% endblock %}
 
+{% block toplink %}{% url 'multi:home' %}{% endblock %}
+
 {% block active_match_list %}active{% endblock %}
 
 {% block head %}
 {% endblock %}
 
 {% block contents %}
-<div class="px-4 px-lg-5">
-    <div class="row gx-4 gx-lg-5 justify-content-center">
-        <div class="col-md-10 col-lg-8 col-xl-7">
-            <h1>{{ team }}の対戦結果一覧</h1>
-            <div class="d-flex justify-content-end mb-4">
-                <a class="btn btn-primary float-right" href="{% url 'multi:game_create' %}">対戦結果登録</a>
+<div class="px-4 px-lg-5 row justify-content-center">
+    <div class="col-md-10 col-lg-8 col-xl-7">
+        <h4 class="bg-secondary text-white p-1">{{ team }}の対戦結果一覧</h4>
+        <div class="d-flex justify-content-end mb-4">
+            <a class="btn btn-primary" href="{% url 'multi:game_create' %}">対戦結果登録</a>
+        </div>
+        {% for game in game_list %}
+        <a href="{% url 'multi:game_detail' game.pk %}" class="text-decoration-none"><!--pk=プライマリキー-->
+            <div class="row">
+                <div class="col-md-8 h2 mb-0 bg-light">{{ game.name }}{% if game.name == '' %}タイトルなし{% endif %}</div>
+
+                <div class="col-md-4 bg-light text-dark">
+                    <p class="text-end">{{ game.date }}</p>
+                </div>
+                <div class="col-12 bg-light text-dark mb-2">　
+                    {% for pl in game.participant_game.all %}
+                    {{ pl.rank }}位:
+                    {{ pl.player.name }}
+                    {% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </div>
             </div>
-            {% for game in game_list %}
-            <div class="post-preview">
-                <a href="{% url 'multi:game_detail' game.pk %}"><!--pk=プライマリキー-->
-                    <h2 class="post-subtitle">
-                        {{ game.name }}{% if game.name == '' %}タイトルなし{% endif %}
-                    </h2>
+        </a>
+        {% empty %}
+        <p>対戦結果がありません。</p>
+        {% endfor %}
+
+        <!--  ページネーション処理  -->
+        {% if is_paginated %}
+        <ul class="pagination">
+            <!--前ページへのリンク-->
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a href="?page={{ page_obj.previous_page_number }}" class="page-link">
+                    <span aria-hidden="true">&laquo;</span>
                 </a>
-                <div class="post-meta">{{ game.date }}　{% for pl in game.participant_game.all %}{{ pl.rank }}位: {{ pl.player.name }}
-                    {% if not forloop.last %},{% endif %} {% endfor %}</div>
-            </div>
-            <hr class="my-3">
-            {% empty %}
-            <p>対戦結果がありません。</p>
+            </li>
+            {% endif %}
+
+            <!--ページ数表示-->
+            {% for page_num in page_obj.paginator.page_range %}
+            {% if page_obj.number == page_num %}
+            <li class="page-item active">
+                <a href="#" class="page-link">{{page_num}}</a>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a href="?page={{ page_num }}" class="page-link">{{page_num}}</a>
+            </li>
+            {% endif %}
             {% endfor %}
 
-            <!--  ページネーション処理  -->
-            {% if is_paginated %}
-            <ul class="pagination">
-                <!--前ページへのリンク-->
-                {% if page_obj.has_previous %}
-                <li class="page-item">
-                    <a href="?page={{ page_obj.previous_page_number }}" class="page-link">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-                {% endif %}
-
-                <!--ページ数表示-->
-                {% for page_num in page_obj.paginator.page_range %}
-                    {% if page_obj.number == page_num %}
-                    <li class="page-item active">
-                        <a href="#" class="page-link">{{page_num}}</a>
-                    </li>
-                    {% else %}
-                    <li class="page-item">
-                        <a href="?page={{ page_num }}" class="page-link">{{page_num}}</a>
-                    </li>
-                    {% endif %}
-                {% endfor %}
-
-                <!--次ページへのリンク-->
-                {% if page_obj.has_next %}
-                <li class="page-item">
-                    <a href="?page={{ page_obj.next_page_number }}" class="page-link">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-                {% endif %}
-            </ul>
+            <!--次ページへのリンク-->
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a href="?page={{ page_obj.next_page_number }}" class="page-link">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
             {% endif %}
-        </div>
+        </ul>
+        {% endif %}
     </div>
 </div>
+
 {% endblock %}

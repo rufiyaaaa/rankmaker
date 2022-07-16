@@ -186,7 +186,7 @@ class GameDeleteView(LoginRequiredMixin, generic.DeleteView):
 class PlayerListView(LoginRequiredMixin, generic.ListView):
     model = Player
     template_name = 'multi/player_list.html'
-    paginate_by = 30
+    paginate_by = 15
 
     def get_queryset(self):
         affl = Affiliation.objects.get(user=self.request.user)

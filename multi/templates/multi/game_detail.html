@@ -3,55 +3,61 @@
 
 {% block title %}対戦結果詳細 | ランクメーカー{% endblock %}
 
+{% block toplink %}{% url 'multi:home' %}{% endblock %}
+
 {% block active_match_list %}active{% endblock %}
 
 {% block contents %}
-    <div class="row">
-        <div class="col-3">
-            <strong>試合タイトル</strong>
+<div class="px-4 px-lg-5 row justify-content-center">
+    <div class="col-md-10 col-lg-8 col-xl-7">
+        <h4 class="bg-secondary text-white p-1">対戦結果</h4>
+        <div class="row">
+            <div class="col-3">
+                <strong>試合タイトル</strong>
+            </div>
+            <div class="col-9">
+                {% if object.name != "" %}{{ object.name }}{% else %}タイトルなし{% endif %}
+            </div>
         </div>
-        <div class="col-9">
-            {{ object.name }}
+
+        <hr class="my-1">
+
+        <div class="row">
+            <div class="col-3">
+                <strong>試合日時</strong>
+            </div>
+            <div class="col-9">
+                {{ object.date }}
+            </div>
         </div>
+
+        <hr class="my-1">
+
+        <div class="row">
+            <div class="col-3">
+                <strong>対戦結果</strong>
+            </div>
+
+            <div class="col-9">
+                <table class="table">
+                    {% for participant in participants %}
+                    <tr>
+                        <td>{{ participant.rank }}位</td>
+                        <td>{{ participant.player.name }}</td>
+                        <td>{{ participant.player.ltst_rating }}</td>
+                    </tr>
+
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+        <hr class="my-1">
+
+
+        <a href="{% url 'multi:game_update' object.pk %}" class="btn btn-primary mt-5 mb-3">編集</a>
+        <a href="{% url 'multi:game_delete' object.pk %}" class="btn btn-danger mt-5 mb-3 ml-2">削除</a>
+        <a href="{% url 'multi:game_list' %}" class="btn btn-secondary mt-5 mb-3">戻る</a>
     </div>
-
-    <hr>
-
-    <div class="row">
-        <div class="col-3">
-            <strong>試合日時</strong>
-        </div>
-        <div class="col-9">
-            {{ object.date }}
-        </div>
-    </div>
-
-    <hr>
-
-    <div class="row">
-        <div class="col-3">
-            <strong>対戦結果</strong>
-        </div>
-
-        <div class="col-9">
-            <table class="table">
-                {% for participant in participants %}
-                <tr>
-                    <td>{{ participant.rank }}位</td>
-                    <td>{{ participant.player.name }}</td>
-                    <td>{{ participant.player.ltst_rating }}</td>
-                </tr>
-
-                {% endfor %}
-            </table>
-        </div>
-    </div>
-
-    <hr>
-
-
-    <a href="{% url 'multi:game_update' object.pk %}" class="btn btn-success mt-5 mb-3">編集</a>
-    <a href="{% url 'multi:game_delete' object.pk %}" class="btn btn-danger mt-5 mb-3 ml-2">削除</a>
-    <a href="{% url 'multi:game_list' %}" class="btn btn-secondary mt-5 mb-3">戻る</a>
-
-{% endblock %}
+</div>
+        {% endblock %}

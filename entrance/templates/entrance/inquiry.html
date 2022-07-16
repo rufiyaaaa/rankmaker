@@ -1,27 +1,35 @@
-{% extends 'entrance/base.html' %}
+{% extends 'multi/base.html' %}
 
-{% block title %}お問い合わせ｜ランクメーカーDUEL{% endblock %}
+{% block title %}お問い合わせ｜ランクメーカー{% endblock %}
 
 {% block active_inquiry %}active{% endblock %}
 
-{% block contents %}
+{% block toplink %}{% url 'entrance:index' %}{% endblock %}
 
-        <div class="my-div-style">
+{% block contents %}
+<div class="container">
+    <div class="text-center">
+        <h1>お問い合わせ・ご意見ご感想</h1>
+
+        <div class="w-75 mx-auto border p-3">
             <form method="post">
                 {% csrf_token %}
 
-                {{ form.non_field_errors }}
+                <div class="text-start">
+                    {{ form.non_field_errors }}
 
-                {% for field in form %}
-                <div class="mb-4 col-8">
+                    {% for field in form %}
                     <label for="{{ field.id_for_label }}" class="form-label">
                         <strong>{{ field.label_tag }}</strong>
                     </label>
                     {{ field }}
                     {{ field.errors }}
+
+                    {% endfor %}
                 </div>
-                {% endfor %}
-                <button class="btn btn-primary" type="submit">送信</button>
+                <button class="btn btn-primary mt-3" type="submit">送信</button>
             </form>
         </div>
+    </div>
+</div>
 {% endblock %}

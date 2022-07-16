@@ -1,52 +1,105 @@
-{% extends 'entrance/base.html' %}
+{% extends 'multi/base.html' %}
 
 {% load static %}
 
 {% block title %}ランクメーカー{% endblock %}
 
-{% block header %}
+{% block toplink %}{% url 'entrance:index' %}{% endblock %}
 
-<header class="masthead text-center text-white">
-    <div class="masthead-content">
-        <div class="container">
-            <h1 class="masthead-heading mb-0">ランクメーカー</h1>
-            <h4 class="masthead-subheading mb-0">部内ランキングを作ろう</h4>
-            <a href="{% url 'account_login' %}" class="btn btn-primary btn-xl rounded-pill mt-3">はじめる</a>
-            <a href="{% url 'entrance:app_detail' %}" class="btn btn-secondary btn-xl rounded-pill mt-3">詳しく知る</a>
+{% block contents %}
+<div class="mb-3">
+    <div class="row">
+        <div class="col-sm-9 m-auto">
+            <img src="{% static 'assets/img/topimage.png' %}" alt="" class="img-fluid">
+        </div>
+        <div class="d-flex col-sm-3 bg-light">
+            <div class="my-auto w-100">
+                <a href="{% url 'account_login' %}" class="btn btn-primary rounded-pill w-100 my-2">ログイン</a>
+
+                <a href="{% url 'account_signup' %}" class="btn btn-outline-primary rounded-pill w-100 my-2">新規登録</a>
+            </div>
         </div>
     </div>
-    <div class="bg-circle-1 bg-circle"></div>
-    <div class="bg-circle-2 bg-circle"></div>
-    <div class="bg-circle-3 bg-circle"></div>
-    <div class="bg-circle-4 bg-circle"></div>
-</header>
+</div>
 
-{% endblock %}
+<div class="px-5">
+    <h3 class="bg-info bg-gradient text-white p-1">0. ランクメーカーでできること</h3>
+    <p class="mb-4 ">
+        対戦結果を登録すると、ランキングとレーティングが更新されます
+    </p>
+    <p class="mb-4 ">
+        プレイヤーの追加・引退、対戦結果の修正も自由自在
+    </p>
 
-{% block contents%}
-    <h2 class="bg-light">はじめに</h2>
-<p class="my-4">
-    ランクメーカーは、部内ランキング、サークル内ランキングを計算するアプリです。</p>
-    <p class="my-4">
-    このアプリはクイズサークル内でのランキングを計算するアプリとして開発されました。<br>
-    しかし、クイズだけでなく、例えばゴルフやケイリン、キンボールのような多チーム同時対戦スポーツ、
-    「カタン」やその他ボードゲームのような多プレイヤー同時対戦ゲームでも使用が可能です。
-    また、囲碁や将棋といった１対１ゲーム、テニスや野球と言った１対１スポーツにも当然使用可能です。<br>
-</p>
-<p class="my-4">
-    ランキングやレーティングという仕組みは、時に無用な争いやいざこざを産むことがあり、毛嫌いされることもあります。
-    しかし使い方次第では、ゲーム・スポーツをより楽しめるものにするツールとなると確信しています。<br>
-    例えばランキングをもとにリーグを分け、より実力の近い相手と対戦するとか。
-    チーム内で実力的に劣っているプレイヤーにとっては、ランキングを１つ上げることがマイルストーンとなりうるかもしれません。
-</p>
-<p class="my-4">
-    現時点ではまだ開発中のサービスであり、それらのメリットを完全には引き出し切れていない状況です。
-    このクローズドベータテストでは、みなさんからのアドバイスをいただいて、より実用的なサービスとすることを目指しています。
-    「こんな機能があったら使いやすい」「こんな表現をしてほしい」など、ご意見・ご感想・ご提案があれば、どしどしお寄せください！
-</p>
-    <p class="text-end">
-        <a href="{% url 'entrance:app_detail' %}">
-            ＞サービスの詳しい紹介はこちらから
-        </a>
-</p>
+    <h3 class="bg-info bg-gradient text-white p-1">1. チームの作成</h3>
+    <p class="mb-4 ">
+        ユーザー登録後は、まずチームを作成する必要があります。<br>
+        チーム名と説明を入力してチームを作成してください。
+    </p>
+    <p class="mb-4 ">
+        チームを削除する場合は、チーム設定ページ下方の「チームを削除する」ボタンをクリックしてください。<br>
+        チーム削除後、データをもとに戻すことはできません。ご注意ください。
+    </p>
+
+    <h3 class="bg-info bg-gradient text-white p-1">2. メンバーの追加</h3>
+    <p class="mb-4 ">
+        メニューバーのメンバー一覧を開くと、現在登録されている全てのメンバーを確認することができます。<br>
+        ページ右上にある「メンバー追加」ボタンから、メンバーを追加することができます。
+    </p>
+    <p class="mb-4 ">
+        メンバー情報を入力し、追加をクリックするとメンバーが追加されます。<br>
+        現在、メンバー情報として登録可能なものは、名前と引退状況のみとなっています。
+        新たなメンバーを追加する際、既に引退していることは普通ありませんので、
+        引退のチェックボックスは空のまま、追加ボタンをクリックしてください。<br>
+        なお、これらの情報は後からも編集することができます。
+    </p>
+    <p class="mb-4 ">
+        ※引退状況については、メンバーが引退した場合にチェックを入れてください。
+        メンバーが引退すると、そのメンバーはランキングや対戦結果入力画面には表示されなくなります。<br>
+    </p>
+
+
+    <h3 class="bg-info bg-gradient text-white p-1">3. 対戦結果の登録</h3>
+    <p class="mb-4 ">
+        メニューバーから対戦結果一覧を開くと、右上の「対戦結果登録」ボタンから「対戦結果登録」画面に入ることができます。
+    </p>
+    <p class="mb-4 ">
+        入力項目は「対戦名」、「対戦日時」、各プレイヤーの順位となっています。<br>
+        対戦名の入力は任意です。対戦日時は必須入力項目で、秒単位で入力することができますが、対戦の前後関係を判断するために入力するものですので、
+        大まかな時間で結構です。<br>
+        なお、対戦の前後が逆になると、計算されるランキングが異なることがありますのでご注意ください。
+    </p>
+    <p class="mb-4 ">
+        対戦結果は、それぞれのプレイヤーの順位を入力することで登録できます。対戦に参加しなかったプレイヤーには、何も入力しない状態としてください。<br>
+        同率順位にも対応しています。１位、２位、３位、３位、５位・・・のような入力が可能です。
+
+    </p>
+    <p class="mb-4 ">
+
+    </p>
+
+    <h3 class="bg-info bg-gradient text-white p-1">4. ランキングの表示</h3>
+    <p class="mb-4 ">
+        メニューバーの「ランキング」から、ランキングを見ることができます。<br>
+        また、ログイン直後に表示されるトップページでも上位３名のランキングを確認することができます。<Br>
+        ランキングは、計算されたレーティングをもとに作成されます。レーティングの計算は、対戦結果を入力すると自動で行われます。
+    </p>
+
+    <h3 class="bg-info bg-gradient text-white p-1">5. 追加予定の機能</h3>
+    <p class="mb-4 ">
+        今後追加したいと考えている機能は以下のような感じです。
+    <ul class="list-group w-50">
+        <li class="list-group-item">レーティング変化のグラフ表示</li>
+        <li class="list-group-item">対戦結果の一括入力機能</li>
+        <li class="list-group-item">メンバーのアイコン機能</li>
+<li class="list-group-item">レーティングのチューニング機能</li>
+<li class="list-group-item">ランキングの出力機能</li>
+    <li class="list-group-item">過去のランキングの表示</li>
+
+    </ul>
+    </p>
+
+</div>
+
+
 {% endblock %}

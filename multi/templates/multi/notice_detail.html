@@ -3,29 +3,36 @@
 
 {% block title %}{{ object.title }}　| ランクメーカー{% endblock %}
 
+{% block toplink %}{% url 'multi:home' %}{% endblock %}
+
 {% block active_notice_list %}active{% endblock %}
 
 {% block contents %}
-    <div class="row">
-        <div class="col-3">
-            <strong>タイトル</strong>
+<div class="px-4 px-lg-5 row justify-content-center">
+    <div class="col-md-10 col-lg-8 col-xl-7">
+        <h4 class="bg-secondary text-white p-1">{{ object.title }}</h4>
+        <div class="row">
+            <div class="col-3">
+                <strong>公開日時</strong>
+            </div>
+            <div class="col-9">
+                {{ object.release_date }}
+            </div>
         </div>
-        <div class="col-9">
-            {{ object.title }}
+
+        <hr class="my-1">
+
+        <div class="row">
+            <div class="col-3">
+                <strong>本文</strong>
+            </div>
+            <div class="col-9">
+                {{ object.text|linebreaksbr }}
+            </div>
         </div>
+        <hr class="my-1">
+
+        <a href="{% url 'multi:notice_list' %}" class="btn btn-primary mt-3">お知らせ一覧へ</a>
     </div>
-
-    <hr>
-
-    <div class="row">
-        <div class="col-3">
-            <strong>本文</strong>
-        </div>
-        <div class="col-9">
-            {{ object.text|linebreaksbr }}
-        </div>
-    </div>
-    <hr>
-
-    <a href="{% url 'multi:notice_list' %}" class="btn btn-secondary mt-5 mb-3">お知らせ一覧へ</a>
-{% endblock %}
+</div>
+        {% endblock %}

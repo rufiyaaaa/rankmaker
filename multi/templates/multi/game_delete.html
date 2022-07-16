@@ -3,10 +3,14 @@
 
 {% block title %}対戦結果の削除 | ランクメーカー{% endblock %}
 
+{% block toplink %}{% url 'multi:home' %}{% endblock %}
+
 {% block active_match_list %}active{% endblock %}
 
 {% block contents %}
-    <div class="row">
+<div class="px-4 px-lg-5 row justify-content-center">
+    <div class="col-md-10 col-lg-8 col-xl-7">
+        <h4 class="bg-secondary text-white p-1">対戦結果の削除</h4>
         <form method="POST">
             {% csrf_token %}
             <p>本当に削除しますか？</p>
@@ -14,4 +18,5 @@
             <a href="{% url 'multi:game_detail' object.pk %}" class="btn btn-secondary mt-5 ml-2">キャンセル</a>
         </form>
     </div>
+</div>
 {% endblock %}

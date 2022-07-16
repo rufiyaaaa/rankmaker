@@ -3,17 +3,19 @@
 
 {% block title %}対戦結果追加 | ランクメーカー{% endblock %}
 
+{% block toplink %}{% url 'multi:home' %}{% endblock %}
+
 {% block active_match_list %}active{% endblock %}
 
 {% block contents %}
-    <div class="row">
+<div class="px-4 px-lg-5 row justify-content-center">
+    <div class="col-md-10 col-lg-8 col-xl-7">
+        <h4 class="bg-secondary text-white p-1">対戦情報</h4>
+        <h6 class="mb-0">対戦に参加したプレイヤーの順位を入力し、それ以外は空欄としてください</h6>
+
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="row">
-                <div class="col-auto mr-auto">
-                    <h2 class="">対戦情報</h2>
-                    <h6 class="mb-0">対戦に参加したプレイヤーの順位を入力し、それ以外は空欄としてください</h6>
-                </div>
                 <div class="col-auto ms-auto d-flex align-items-end">
                     <button class="btn btn-primary" type="submit">作成</button>
                 </div>
@@ -26,4 +28,5 @@
             <button class="btn btn-primary" type="submit">作成</button>
         </form>
     </div>
+</div>
 {% endblock %}
