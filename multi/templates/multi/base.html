@@ -84,13 +84,13 @@
     </nav>
 
 
-    <div class="container">
+    <div class="container mt-3">
         {% block header %}{% endblock %}
         {% if messages %}
-        <ul class="clearfix" style="list-style: none;">
+        <ul class="clearfix mb-1" style="list-style: none;">
             {% for message in messages %}
 
-            <li {% if message.tags %} class="float-md-end w-md-50 {{ message.tags }}" {% endif %}>
+            <li {% if message.tags %} class="float-md-end w-md-50 mb-0 {{ message.tags }}" {% endif %}>
                 {{ message }}
             </li>
             {% endfor %}
