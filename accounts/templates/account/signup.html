@@ -22,7 +22,16 @@
                     <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
                     {% endif %}
                 </div>
-                <button class="btn btn-primary" type="submit">利用規約に同意して登録</button>
+                <div class="px-4 py-1 mb-2 text-center">
+                    <h6>注意事項</h6>
+                    <div class="border text-start small">
+                        <p>
+                            本サービスではメールアドレスを除く個人情報を積極的に取得しません。 チーム名、メンバー名等の自由記入欄に個人情報を登録しないようご注意ください。<br>
+                            登録されたデータについては、サイトの運営、維持、管理、その他のご案内のために利用する場合があります。また、これらのデータを本人の同意なく第三者に提供することはありません。
+                        </p>
+                    </div>
+                </div>
+                <button class="btn btn-primary" type="submit">注意事項に同意して登録</button>
             </form>
         </div>
         <div class="col-xl-3 col-md-2"></div>
