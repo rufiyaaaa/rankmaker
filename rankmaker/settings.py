@@ -12,9 +12,9 @@ INSTALLED_APPS += [
 ]
 
 # 許可するホスト名のリスト
-# Hostlist = os.environ.get('ALLOWED_HOSTS').split(",")
+Hostlist = os.environ.get('ALLOWED_HOSTS').split(",")
 USE_X_FORWARDED_HOST = True
-ALLOWED_HOSTS = ['rankmaker.jp']
+ALLOWED_HOSTS = Hostlist
 
 # 静的ファイルを配置する場所
 STATIC_ROOT = '/usr/share/nginx/html/static'
