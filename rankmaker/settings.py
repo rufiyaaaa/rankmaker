@@ -4,7 +4,7 @@ from .settings_common import *
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # デバッグモードを有効にするかどうか（本番運用では必ずFalseにする）
-DEBUG = False
+DEBUG = True
 
 # django_SESをINSTALLED＿APPSに追加
 INSTALLED_APPS += [
@@ -12,9 +12,9 @@ INSTALLED_APPS += [
 ]
 
 # 許可するホスト名のリスト
-Hostlist = os.environ.get('ALLOWED_HOSTS').split(",")
+# Hostlist = os.environ.get('ALLOWED_HOSTS').split(",")
 USE_X_FORWARDED_HOST = True
-ALLOWED_HOSTS = Hostlist
+ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS')]
 
 # 静的ファイルを配置する場所
 STATIC_ROOT = '/usr/share/nginx/html/static'
