@@ -12,9 +12,8 @@ INSTALLED_APPS += [
 ]
 
 # 許可するホスト名のリスト
-# Hostlist = os.environ.get('ALLOWED_HOSTS').split(",")
-USE_X_FORWARDED_HOST = True
-ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS')]
+Hostlist = os.environ.get('ALLOWED_HOSTS').split(",")
+ALLOWED_HOSTS = Hostlist
 
 # 静的ファイルを配置する場所
 STATIC_ROOT = '/usr/share/nginx/html/static'
