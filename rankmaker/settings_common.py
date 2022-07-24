@@ -181,3 +181,5 @@ DEFAULT_FROM_EMAIL = os.environ.get('FROM_EMAIL')
 
 # list 11.2
 MEDIA_URL = '/media/'
+
+USE_X_FORWARDED_HOST = True
