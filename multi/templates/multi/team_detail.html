@@ -1,0 +1,76 @@
+{% extends 'multi/center.html' %}
+{% load static %}
+
+{% block title %}チーム設定 | ランクメーカー{% endblock %}
+
+{% block active_team_config %}active{% endblock %}
+
+{% block toplink %}{% url 'multi:home' %}{% endblock %}
+
+{% block contents %}
+
+        <h4 class="bg-secondary text-white p-1">チーム設定</h4>
+        <div class="row">
+            <div class="col-4">
+                <strong>チーム名</strong>
+            </div>
+            <div class="col-8">
+                {{ object.name }}
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row">
+            <div class="col-4">
+                <strong>登録日</strong>
+            </div>
+            <div class="col-8">
+                {{ object.est_date }}
+            </div>
+        </div>
+        <hr>
+
+        <div class="row">
+            <div class="col-4">
+                <strong>チーム説明</strong>
+            </div>
+            <div class="col-8">
+                {{ object.description }}
+            </div>
+        </div>
+        <hr>
+
+        <div class="row">
+            <div class="col-4">
+                <strong>公開キーフレーズ</strong>
+            </div>
+            <div class="col-8">
+                {% if object.page_id %}
+                {{ object.page_id }}
+                {% else %}
+                未設定
+                {% endif %}
+            </div>
+        </div>
+
+
+        {% if object.page_id %}
+        <hr>
+
+        <div class="row">
+            <div class="col-4">
+                <strong>非会員向けリンク</strong>
+            </div>
+            <div class="col-8">
+                <a href="{{ request.scheme }}://{{ request.get_host }}{% url 'multi:ranking_ext' object.page_id %}">
+                    {{ request.scheme }}://{{ request.get_host }}{% url 'multi:ranking_ext' object.page_id %}
+                </a>
+            </div>
+        </div>
+
+        {% endif %}
+
+        <a href="{% url 'multi:team_config' %}" class="btn btn-primary mt-5 mb-3">編集</a>
+
+{% endblock %}

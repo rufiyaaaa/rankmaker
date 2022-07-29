@@ -14,7 +14,7 @@
 
 {% block contents %}
 
-        <h4 class="bg-secondary text-white p-1">最新ランキング</h4>
+        <h4 class="bg-secondary text-white p-1">{{ team.name }} 最新ランキング</h4>
         <div>
             <table class="table">
                 <tr>
@@ -31,10 +31,12 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="3">メンバーが登録されていません。<a href="{% url 'multi:player_create' %}">メンバーの登録はこちらから。</a></td>
+                    <td colspan="3">メンバーが登録されていません。</td>
                 </tr>
                 {% endfor %}
             </table>
         </div>
+        <p class="small text-end"><a href="{% url 'entrance:index' %}">＞トップページに戻る</a></p>
+
 
 {% endblock %}

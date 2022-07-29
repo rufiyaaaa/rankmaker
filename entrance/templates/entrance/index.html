@@ -6,7 +6,7 @@
 
 {% block toplink %}{% url 'entrance:index' %}{% endblock %}
 
-{% block contents %}
+{% block center %}
 <div class="mb-3">
     <div class="row g-0">
         <div class="col-sm-9 m-auto">
@@ -15,14 +15,13 @@
         <div class="d-flex col-sm-3 bg-light">
             <div class="my-auto w-100 px-2">
                 <a href="{% url 'account_login' %}" class="btn btn-primary rounded-pill w-100 my-2">ログイン</a>
-
                 <a href="{% url 'account_signup' %}" class="btn btn-outline-primary rounded-pill w-100 my-2">新規登録</a>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row justify-content-center">
+<!--<div class="row justify-content-center">
     <div class="col-sm-9 border text-center mb-3 p-2">
         <h4 class="text-danger">お知らせ</h4>
         <p class="text-dark text-start mb-0">
@@ -32,7 +31,7 @@
             今後もランクメーカーβテストをよろしくお願いいたします。
         </p>
     </div>
-</div>
+</div>-->
 
 <h3 class="bg-info bg-gradient text-white p-1">0. ランクメーカーでできること</h3>
 <p class="mb-4 ">
@@ -95,6 +94,12 @@
     また、ログイン直後に表示されるトップページでも上位３名のランキングを確認することができます。<Br>
     ランキングは、計算されたレーティングをもとに作成されます。レーティングの計算は、対戦結果を入力すると自動で行われます。
 </p>
+<p class="mb-4 ">
+    チームメイトにランキングを見せたい場合には「チーム設定」から「編集」をクリックし、「公開パスフレーズ」を設定します。<br>
+    これを設定すると、「チーム設定」画面に「非会員向けリンク」が出現します。<Br>
+    チームメイトにこのURLを送ると、ログインしないでチームのランキングを見ることができます。<br>
+    なお、公開をやめたい場合は、再び「チーム設定」から「編集」をクリックし、「公開パスフレーズ」を空欄にして保存してください。
+</p>
 
 <h3 class="bg-info bg-gradient text-white p-1">5. 追加予定の機能</h3>
 <p class="mb-4 ">
@@ -104,7 +109,6 @@
     <li class="list-group-item">対戦結果の一括入力機能</li>
     <li class="list-group-item">メンバーのアイコン機能</li>
     <li class="list-group-item">レーティングのチューニング機能</li>
-    <li class="list-group-item">ランキングの出力機能</li>
     <li class="list-group-item">過去のランキングの表示</li>
 
 </ul>

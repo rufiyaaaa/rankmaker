@@ -1,4 +1,4 @@
-{% extends 'multi/base.html' %}
+{% extends 'multi/center.html' %}
 {% load static %}
 
 {% block title %}プレイヤー詳細 | ランクメーカー{% endblock %}
@@ -8,55 +8,54 @@
 {% block toplink %}{% url 'multi:home' %}{% endblock %}
 
 {% block contents %}
-<div class="px-4 px-lg-5 row justify-content-center">
-    <div class="col-md-10 col-lg-8 col-xl-7">
+
         <h4 class="bg-secondary text-white p-1">メンバー情報</h4>
         <div class="row">
-            <div class="col-3">
+            <div class="col-4">
                 <strong>ID</strong>
             </div>
-            <div class="col-9">
+            <div class="col-8">
                 {{ object.id }}
             </div>
         </div>
 
-        <hr>
+        <hr class="my-1">
 
         <div class="row">
-            <div class="col-3">
+            <div class="col-4">
                 <strong>名前</strong>
             </div>
-            <div class="col-9">
+            <div class="col-8">
                 {{ object.name }}
             </div>
         </div>
-        <hr>
+        <hr class="my-1">
 
         <div class="row">
-            <div class="col-3">
+            <div class="col-4">
                 <strong>現役／引退</strong>
             </div>
-            <div class="col-9">
+            <div class="col-8">
                 {% if object.inactive == True %}
                 引退
                 {% else %}
-                現役バリバリ
+                現役
                 {% endif %}
             </div>
         </div>
-        <hr>
+        <hr class="my-1">
 
         <div class="row">
-            <div class="col-3">
+            <div class="col-4">
                 <strong>対戦数</strong>
             </div>
-            <div class="col-9">
+            <div class="col-8">
                 {{ object.match_exp }}試合
             </div>
         </div>
+        <hr class="my-1">
 
-        <a href="{% url 'multi:player_update' object.pk %}" class="btn btn-primary mt-5 mb-3">編集</a>
-        <a href="{% url 'multi:player_list' %}" class="btn btn-secondary mt-5 mb-3">戻る</a>
-    </div>
-</div>
+        <a href="{% url 'multi:player_update' object.pk %}" class="btn btn-primary mt-3 mb-3">編集</a>
+        <a href="{% url 'multi:player_list' %}" class="btn btn-secondary mt-3 mb-3">戻る</a>
+
 {% endblock %}

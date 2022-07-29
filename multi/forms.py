@@ -2,6 +2,7 @@ import logging
 import os
 import datetime
 
+
 from django import forms
 
 from .models import Game, Player, Affiliation, Team, Participant
@@ -43,11 +44,17 @@ class TeamCreateForm(forms.ModelForm):
 
 
 class TeamConfigForm(forms.ModelForm):
-    name = forms.CharField(label='チーム名', max_length=30)
+    name = forms.CharField(label='チーム名', max_length=50, required=True)
+    page_id = forms.CharField(
+        label="キーフレーズ",
+        max_length=20,
+        required=False,
+        help_text="ランキングをシェアする際の文字列を設定します。<br>5文字以上20文字以下の半角英数字で、他のチームですでに使用されている文字列は設定できません。"
+    )
 
     class Meta:
         model = Team
-        fields = ('name', 'description')
+        fields = ('name', 'description', 'page_id')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -58,9 +65,10 @@ class TeamConfigForm(forms.ModelForm):
 class GameCreateForm(forms.ModelForm):
     name = forms.CharField(label='試合タイトル', max_length=50, required=False)
     date = forms.DateTimeField(
-        label='試合日時(YYYY-MM-DD HH:MM)',
+        label='試合日時',
         required=True,
-        initial=make_aware(datetime.datetime.now())
+        initial=make_aware(datetime.datetime.now()),
+        help_text='試合の前後を判断するのに用います。<br>「YYYY-MM-DD HH:MM」の形式で入力してください。'
     )
 
     def __init__(self, *args, **kwargs):
@@ -84,10 +92,20 @@ class GameCreateForm(forms.ModelForm):
             )
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control align-middle'
+        self.fields['date'].widget.attrs['id'] = 'datepicker'
 
     class Meta:
         model = Game
         fields = ('name', 'date')
+        # widgets = {
+        #     'date': DateTimePickerInput(
+        #         format='%Y-%m-%d %H:%M:%S',
+        #         options={
+        #             'locale': 'ja',
+        #             'dayViewHeaderFormat': 'YYYY年 MMMM',
+        #         }
+        #     )
+        # }
 
     def is_valid(self):
         return super().is_valid()
@@ -95,7 +113,10 @@ class GameCreateForm(forms.ModelForm):
     def clean(self):
         input_data = self.data
 
-        date = make_aware(datetime.datetime.strptime(input_data['date'], '%Y-%m-%d %H:%M:%S'))
+        try:
+            date = make_aware(datetime.datetime.strptime(input_data['date'], '%Y-%m-%d %H:%M:%S'))
+        except ValueError:
+            raise ValidationError('日付の入力形式が間違っています')
         if not self.instance:
             if Game.objects.filter(date=date):
                 raise ValidationError('同時に開催されている試合があるようです。時刻をずらしてください。')
@@ -111,7 +132,7 @@ class GameCreateForm(forms.ModelForm):
                     not_none += 1
                     ranks.append(int(item[1]))
                     if int(item[1]) <= 0:
-                        raise ValidationError('順位は正の整数で入力してください')
+                        raise ValidationError('順位は１以上の整数で入力してください')
         if not_none == 0 or not_none == 1:
             raise ValidationError('2名以上に順位を入力してください')
         ranks = sorted(ranks)

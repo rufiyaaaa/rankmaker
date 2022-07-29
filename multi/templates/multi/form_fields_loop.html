@@ -1,0 +1,20 @@
+{% for field in form %}
+<div class="row gx-0">
+    <div class="col-4">
+        <strong>{{ field.label }}</strong>
+        {% if field.field.required %}
+        <span class="badge bg-danger">必須</span>
+        {% endif %}
+    </div>
+    <div class="col-8">
+        {{ field }}
+    </div>
+    <div class="col-12">
+        <p class="small m-0 ps-2 text-danger">{{ field.errors.0 }}</p>
+        {% if field.help_text %}
+        <p class="small m-0 ps-2">{{ field.help_text|safe }}</p>
+        {% endif %}
+    </div>
+</div>
+<hr class="my-1">
+{% endfor %}

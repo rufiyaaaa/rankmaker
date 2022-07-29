@@ -1,4 +1,4 @@
-{% extends 'multi/base.html' %}
+{% extends 'multi/center.html' %}
 
 {% load static %}
 
@@ -9,8 +9,7 @@
 {% block toplink %}{% url 'multi:home' %}{% endblock %}
 
 {% block contents %}
-<div class="px-4 px-lg-5 row justify-content-center">
-    <div class="col-md-10 col-lg-8 col-xl-7">
+
         <div>
             {% if user.have_multi_team %}
                 <table class="table mb-0">
@@ -57,6 +56,5 @@
                 </p>
             {% endif %}
         </div>
-    </div>
-</div>
+
 {% endblock %}

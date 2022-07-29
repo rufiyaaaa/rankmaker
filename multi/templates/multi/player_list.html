@@ -1,4 +1,4 @@
-{% extends 'multi/base.html' %}
+{% extends 'multi/center.html' %}
 {% load static %}
 
 {% block title %}チーム設定 | ランクメーカー{% endblock %}
@@ -11,8 +11,6 @@
 {% endblock %}
 
 {% block contents %}
-<div class="px-4 px-lg-5 row justify-content-center">
-    <div class="col-md-10 col-lg-8 col-xl-7">
         <h4 class="bg-secondary text-white p-1">{{ team }}　メンバーリスト</h4>
         <div class="d-flex justify-content-end mb-4">
             <a class="btn btn-primary" href="{% url 'multi:player_create' %}">メンバー追加</a>
@@ -78,6 +76,5 @@
             {% endif %}
         </ul>
         {% endif %}
-    </div>
-</div>
+
 {% endblock %}

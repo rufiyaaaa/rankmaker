@@ -31,11 +31,12 @@
 
   gtag('config', 'G-WCEV41YJYC');
 
+
     </script>
 </head>
 
 <body>
-
+{% load django_bootstrap5 %}
 <div id="wrapper" class="bg-white">
     <!-- Navigation-->
     <nav class="navbar navbar-light bg-light sticky-top">
@@ -61,7 +62,7 @@
                            class="nav-link {% block active_player_list %}{% endblock %}">メンバー一覧</a>
                     </li>
                     <li class="nav-item">
-                        <a href="{% url 'multi:team_config' %}"
+                        <a href="{% url 'multi:team_detail' %}"
                            class="nav-link {% block active_team_config %}{% endblock %}">チーム設定</a>
                     </li>
                     <li class="nav-item">
@@ -108,14 +109,19 @@
         {% endif %}
 
 
-        {% block contents %}{% endblock %}
+        {% block center %}{% endblock %}
 
 
     </div>
 
     <!-- Footer-->
-    <footer class="py-4 bg-dark mt-5">
+    <footer class="py-4 bg-dark mt-auto mb-0">
         <div class="container px-5">
+            <p class="mb-3 text-center text-white small">
+                <a href="{% url 'entrance:rating_system' %}" class="link-light">
+                    ランクメーカーの仕組み
+                </a>
+            </p>
             <p class="m-0 text-center text-white small">Copyright &copy; ランクメーカー 2022</p>
         </div>
     </footer>

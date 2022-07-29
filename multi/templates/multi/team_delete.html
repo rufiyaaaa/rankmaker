@@ -1,15 +1,14 @@
-{% extends 'multi/base.html' %}
+{% extends 'multi/center.html' %}
 {% load static %}
 
 {% block title %}チーム削除 | ランクメーカー{% endblock %}
 
-{% block active_player_list %}active{% endblock %}
+{% block active_team_config %}active{% endblock %}
 
 {% block toplink %}{% url 'multi:home' %}{% endblock %}
 
 {% block contents %}
-<div class="px-4 px-lg-5 row justify-content-center">
-    <div class="col-md-10 col-lg-8 col-xl-7">
+
         <h4 class="bg-secondary text-white p-1">チーム削除</h4>
         <div class="row">
             <form method="POST">
@@ -19,6 +18,5 @@
                 <a href="{% url 'multi:team_config' %}" class="btn btn-secondary mt-5 ml-2">キャンセル</a>
             </form>
         </div>
-    </div>
-</div>
+
 {% endblock %}

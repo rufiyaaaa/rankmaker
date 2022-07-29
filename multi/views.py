@@ -1,6 +1,7 @@
 import logging
 import datetime
 from django import forms
+
 from django.urls import reverse_lazy
 from django.views import generic
 from django.shortcuts import render, redirect, get_object_or_404
@@ -48,6 +49,20 @@ class RankingView(LoginRequiredMixin, generic.TemplateView):
             context['team'] = affl.team
         else:
             context['ranking'] = Player.objects.none()
+
+        return context
+
+
+class RankingExtView(generic.TemplateView):
+    template_name = "multi/ranking_ext.html"
+
+    def get_context_data(self, **kwargs):
+        page_id = self.kwargs.get('page_id')
+        context = super().get_context_data(**kwargs)
+        context['team'] = Team.objects.get(page_id=page_id)
+
+        players = Player.objects.filter(team=context['team']).filter(inactive=False).order_by('-ltst_rating')
+        context['ranking'] = players
 
         return context
 
@@ -315,6 +330,20 @@ class TeamCreateView(LoginRequiredMixin, generic.CreateView):
     def form_invalid(self, form):  # formのバリデーションに問題があるときに実行
         messages.error(self.request, "チームの作成に失敗しました。")
         return super().form_invalid(form)
+
+
+class TeamDetailView(LoginRequiredMixin, generic.DetailView):
+    model = Team
+    template_name = 'multi/team_detail.html'
+
+    def get_object(self, queryset=None):
+        return Affiliation.objects.get(user=self.request.user).team
+
+    def get_context_data(self, **kwargs):
+        affl = Affiliation.objects.get(user=self.request.user)
+        context = super().get_context_data(**kwargs)
+        context['team'] = affl.team
+        return context
 
 
 class TeamConfigView(LoginRequiredMixin, generic.UpdateView):

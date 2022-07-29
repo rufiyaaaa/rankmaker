@@ -6,15 +6,28 @@ from django.utils.timezone import make_aware
 from accounts.models import CustomUser
 from django.db import models
 
+from django.core.validators import MinLengthValidator, RegexValidator
+
 # Create your models here.
 
 
 class Team(models.Model):
     """チームモデル"""
 
-    name = models.CharField(verbose_name='本文', max_length=50, blank=True, null=True)
+    name = models.CharField(verbose_name='チーム名', max_length=50)
     est_date = models.DateTimeField(verbose_name='登録日', auto_now_add=True)
     description = models.TextField(verbose_name='説明', max_length=500, blank=True, null=True)
+    page_id = models.CharField(
+        verbose_name="キーフレーズ",
+        max_length=20,
+        blank=True,
+        null=True,
+        unique=True,
+        validators=[
+            MinLengthValidator(5, '5文字以上で設定してください'),
+            RegexValidator(r'^[a-zA-Z0-9]*$', '使用可能な文字は半角英数字のみです')
+        ]
+    )
 
     class Meta:
         verbose_name_plural = 'Team'

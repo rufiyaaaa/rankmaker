@@ -1,4 +1,4 @@
-{% extends 'multi/base.html' %}
+{% extends 'multi/center.html' %}
 {% load static %}
 
 {% block title %}メンバー追加 | ランクメーカー{% endblock %}
@@ -8,20 +8,17 @@
 {% block active_player_list %}active{% endblock %}
 
 {% block contents %}
-<div class="px-4 px-lg-5 row justify-content-center">
-    <div class="col-md-10 col-lg-8 col-xl-7">
+
         <h4 class="bg-secondary text-white p-1">メンバー一括追加</h4>
         <p>複数のメンバーを一括で追加します。名前と名前の間には改行を入力してください。</p>
-        <div class="row">
+        <div class="row gx-0">
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
-                <table class="table">
-                    {{ form.as_table }}
-                </table>
+
+                {% include 'multi/form_fields_loop.html' %}
                 <button class="btn btn-primary" type="submit">追加</button>
                 <a href="{% url 'multi:player_create' %}">＞一人ずつ追加する場合はこちら</a>
             </form>
         </div>
-    </div>
-</div>
+
         {% endblock %}
