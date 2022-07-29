@@ -14,7 +14,7 @@ from django.core.validators import MinLengthValidator, RegexValidator
 class Team(models.Model):
     """チームモデル"""
 
-    name = models.CharField(verbose_name='チーム名', max_length=50)
+    name = models.CharField(verbose_name='チーム名', max_length=50, default="<チーム名>")
     est_date = models.DateTimeField(verbose_name='登録日', auto_now_add=True)
     description = models.TextField(verbose_name='説明', max_length=500, blank=True, null=True)
     page_id = models.CharField(
