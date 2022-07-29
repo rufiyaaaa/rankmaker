@@ -350,7 +350,7 @@ class TeamConfigView(LoginRequiredMixin, generic.UpdateView):
     model = Team
     template_name = 'multi/team_config.html'
     form_class = TeamConfigForm
-    success_url = reverse_lazy('multi:home')
+    success_url = reverse_lazy('multi:team_detail')
 
     def get_object(self, queryset=None):
         return Affiliation.objects.get(user=self.request.user).team
