@@ -141,12 +141,10 @@ class Duel(models.Model):
         verbose_name_plural = 'Duel'
 
     def __str__(self):
-        if even:
-            bar = "-E-"
-        else:
-            bar = "->-"
-        return format(self.game.id) + ": " + format(self.winner.name) + bar + format(self.loser)
-        
+
+        return format(self.game.id) + ": " + format(self.winner.name) + "-" + format(self.loser) \
+               + "(" + format(self.even) + ")"
+
 
 class Rating(models.Model):
     """レーティングモデル"""
