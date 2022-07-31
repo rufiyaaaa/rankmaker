@@ -142,10 +142,11 @@ class Duel(models.Model):
 
     def __str__(self):
         if even:
-            return format(self.game.id) + ": " + format(self.winner.name) + "-E-" + format(self.loser)
+            bar = "-E-"
         else:
-            return format(self.game.id) + ": " + format(self.winner.name) + "->-" + format(self.loser)
-
+            bar = "->-"
+        return format(self.game.id) + ": " + format(self.winner.name) + bar + format(self.loser)
+        
 
 class Rating(models.Model):
     """レーティングモデル"""
