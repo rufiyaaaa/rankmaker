@@ -101,13 +101,23 @@ class Game(models.Model):
         verbose_name_plural = 'Game'
 
     def __str__(self):
-        return format(self.id) + format(self.date, '%m%d') + "(" + format(self.team) + ")"
+        return format(self.id) +":"+ format(self.date, '%m%d') + "(" + format(self.team) + ")"
 
 
 class Participant(models.Model):
     """Gameの参加者を追加するモデル"""
-    game = models.ForeignKey(Game, verbose_name='ゲーム', on_delete=models.CASCADE, related_name='participant_game')
-    player = models.ForeignKey(Player, verbose_name='player', on_delete=models.PROTECT, related_name='participant_player')
+    game = models.ForeignKey(
+        Game,
+        verbose_name='ゲーム',
+        on_delete=models.CASCADE,
+        related_name='participant_game'
+    )
+    player = models.ForeignKey(
+        Player,
+        verbose_name='player',
+        on_delete=models.PROTECT,
+        related_name='participant_player'
+    )
     rank = models.IntegerField(verbose_name='順位', default=0)
     new_rating = models.FloatField(verbose_name='対戦後のレーティング', default=1500.0)
     appr_rating = models.IntegerField(verbose_name='修正レーティング', default=0)
@@ -116,7 +126,8 @@ class Participant(models.Model):
         verbose_name_plural = 'Participants'
 
     def __str__(self):
-        return format(self.game.id) + ":" + format(self.player) + " pos: " + format(self.rank)
+        return format(self.game.id) + ":" + format(self.player) \
+               + " pos: " + format(self.rank) + " R:" + format(self.new_rating)
 
 
 class Duel(models.Model):
@@ -130,7 +141,10 @@ class Duel(models.Model):
         verbose_name_plural = 'Duel'
 
     def __str__(self):
-        return format(self.game.id) + ": " + format(self.winner.name) + "-" + format(self.loser)
+        if even:
+            return format(self.game.id) + ": " + format(self.winner.name) + "-E-" + format(self.loser)
+        else:
+            return format(self.game.id) + ": " + format(self.winner.name) + "->-" + format(self.loser)
 
 
 class Rating(models.Model):
@@ -144,7 +158,7 @@ class Rating(models.Model):
         verbose_name_plural = 'Rating'
 
     def __str__(self):
-        return format(self.player.name) + ":" +  format(self.duel.game)
+        return format(self.player.name) + "(" + format(self.rating_diff) + ") @" + format(self.duel.game)
 
 
 class Notice(models.Model):
