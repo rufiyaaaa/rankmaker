@@ -40,7 +40,7 @@ class Player(models.Model):
     """プレイヤーモデル"""
 
     team = models.ForeignKey(Team, verbose_name='所属', on_delete=models.CASCADE)
-    name = models.CharField(verbose_name='プレイヤー', max_length=40)
+    name = models.CharField(verbose_name='プレイヤー', max_length=10000)
     inactive = models.BooleanField(verbose_name='引退', default=False, blank=True)
     ltst_rating = models.IntegerField(verbose_name='最新レーティング', default=0)
 
@@ -51,7 +51,6 @@ class Player(models.Model):
         return Participant.objects.filter(player=self).count()
 
     def latest_rating(self, date):  # Participantを探って最新のレーティングを見つける
-        print(self.name + "の直近レーティングを探索。基準日時は" + str(date))
         records = Participant.objects.filter(player=self)
         date_cursor = date
         latest_participant = records.first()
@@ -61,7 +60,6 @@ class Player(models.Model):
                 latest_participant = record
 
         if date_cursor == date:
-            print("基準日時以前の記録が見つかりません。初期値である1500を適用します。")
             return 1500.0
         else:
             for record in records:
@@ -69,7 +67,6 @@ class Player(models.Model):
                     if date_cursor < record.game.date:
                         date_cursor = record.game.date
                         latest_participant = record
-            print("該当する記録を発見。日時は" + str(date_cursor))
             return float(latest_participant.new_rating)
 
     def now_rating(self):

@@ -12,7 +12,7 @@ from django.utils.timezone import make_aware
 
 
 class PlayerCreateForm(forms.ModelForm):
-    name = forms.CharField(label='名前', max_length=30)
+    name = forms.CharField(label='名前', max_length=40)
 
     class Meta:
         model = Player
@@ -23,7 +23,7 @@ class PlayerCreateForm(forms.ModelForm):
 
 
 class BatchPlayerCreateForm(forms.ModelForm):
-    name = forms.CharField(label='プレイヤー名', widget=forms.Textarea)
+    name = forms.CharField(label='プレイヤー名', widget=forms.Textarea, max_length=10000)
 
     class Meta:
         model = Player

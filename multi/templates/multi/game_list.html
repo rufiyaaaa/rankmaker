@@ -24,7 +24,7 @@
             <p class="text-end mb-0">{{ game.date }}</p>
         </div>
         <div class="col-12 bg-light text-dark">
-            {% for pl in game.participant_game.all %}
+            {% for pl in game.participant_game.all|dictsort:"rank" %}
             {{ pl.rank }}位:{{pl.player.name}}{% if not forloop.last %}、{% endif %}
             {% endfor %}
         </div>

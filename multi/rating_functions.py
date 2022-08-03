@@ -28,14 +28,13 @@ def calc_duel_rating(game=Game()):
         loser_rating_record = Rating.objects.filter(duel=duel).get(player=duel.loser)
         loser_rating_record.rating_diff = (new_rating[1] - old_rating[1]) / (game.participant_game.all().count() -1)
         loser_rating_record.save()
-        print('duel' + duel.__str__() + '勝者' + duel.winner.name + "  敗者" + duel.loser.name)
 
 
 def calc_game_rating(game=Game()):
-    participant_set = game.participant_game.all()
-    duel_set = game.duel_game.all()
-    rating_set_master = Rating.objects.none()
-    for duel in duel_set:
+    participant_set = game.participant_game.all()   # gameに紐づく参加者を列挙
+    duel_set = game.duel_game.all()                 # gameに紐づくduelを列挙
+    rating_set_master = Rating.objects.none()       # rating_set_masterは空っぽ
+    for duel in duel_set:                           # 関連するduelに対して、関連するratingを取得してrating_set_masterに追加しようとしている？
         rating_set_master = rating_set_master | duel.rating_duel.all()
     for participant in participant_set:
         rating_set = rating_set_master.filter(player=participant.player)
@@ -105,12 +104,8 @@ def refresh_rating(date, team):
     """与えられた日時以降のGameを列挙し、早いものから順に再計算をかける"""
     game_set = Game.objects.filter(team=team).filter(date__gte=date).order_by('date')
     for game in game_set:
-        print("■" + game.__str__() + 'のレーティングを計算')
         calc_duel_rating(game)   # Duelごとのレーティング変化量を計算
-        print(game.__str__() + 'のレーティングをParticipantに反映')
         calc_game_rating(game)   # 上記レーティング変化量からGame単位のレーティング変化量を計算し、Participantに反映
-
-        print('■計算完了')
 
 
 # def participant_update(rank_data, game=Game()):
@@ -135,11 +130,11 @@ def refresh_rating(date, team):
 def separate(data, game=Game()):
     """GameをもとにParticipantを登録。1vs1に分解しDuelを登録しレーティングの計算を行う。"""
     rank_data = []
-    for key in data:
+    for key in data:        # dataの中からkeyを取り出して、csrf, date, nameでなく、かつ・・・
         if key != 'csrfmiddlewaretoken' and key != 'date' and key != 'name':
-            if data[key] != '':
-                rank_data.append([key, data[key]])
-    rank_data.sort(key=lambda x: x[1])
+            if data[key] != '':     # 順位が空欄でなければ
+                rank_data.append([key, int(data[key])])      # 二次元配列の形でrank_dataに突っ込む。左が名前、右が順位
+    rank_data.sort(key=lambda x: x[1])              # 順位でソートする
     for result in rank_data:
         participant_registration(result, game)
         # 仮のRatingレコードも↑で作成(duelを作った時にそれに対して作成するのがスマート）

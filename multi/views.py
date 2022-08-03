@@ -104,7 +104,7 @@ class GameCreateView(LoginRequiredMixin, generic.CreateView):  # 本丸
     def get_initial(self):
         affl = Affiliation.objects.get(user=self.request.user)
         initial = super(GameCreateView, self).get_initial()
-        initial['players'] = Player.objects.filter(team=affl.team).filter(inactive=False)
+        initial['players'] = Player.objects.filter(team=affl.team).filter(inactive=False).order_by('pk')
         initial['initial_value'] = Participant.objects.none()
         return initial
 
@@ -115,7 +115,7 @@ class GameCreateView(LoginRequiredMixin, generic.CreateView):  # 本丸
         game.team = affl.team
         game.save()
 
-        # 参加者とその順位から、Duel、Participationを作成
+        # 参加者とその順位から、Duel、Participantを作成
         separate(form.data, game)
 
         # レーティングの更新処理をする。キーとなる引数は、Game.date
@@ -127,8 +127,6 @@ class GameCreateView(LoginRequiredMixin, generic.CreateView):  # 本丸
     def form_invalid(self, form):  # formのバリデーションに問題があるときに実行
 
         messages.error(self.request, "対戦結果の登録に失敗しました。")
-        for ele in form:
-            print(ele)
         return super().form_invalid(form)
 
     def get_success_url(self):
