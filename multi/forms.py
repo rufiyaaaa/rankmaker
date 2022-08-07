@@ -2,6 +2,7 @@ import logging
 import os
 import datetime
 
+from dateutil import parser
 
 from django import forms
 
@@ -63,12 +64,17 @@ class TeamConfigForm(forms.ModelForm):
 
 
 class GameCreateForm(forms.ModelForm):
-    name = forms.CharField(label='試合タイトル', max_length=50, required=False)
+    name = forms.CharField(
+        label='試合タイトル',
+        max_length=50,
+        required=False,
+        help_text='一覧に表示されますので、わかりやすい名前をつけてあげてください'
+    )
     date = forms.DateTimeField(
         label='試合日時',
         required=True,
         initial=make_aware(datetime.datetime.now()),
-        help_text='試合の前後を判断するのに用います。<br>「YYYY-MM-DD HH:MM」の形式で入力してください。'
+        help_text='試合の前後を判断するのに用います。<br>秒は省略できます。時・分・秒をまるまる省略した場合、０時ちょうどとみなされます。'
     )
 
     def __init__(self, *args, **kwargs):
@@ -114,15 +120,12 @@ class GameCreateForm(forms.ModelForm):
         input_data = self.data
 
         try:
-            date = make_aware(datetime.datetime.strptime(input_data['date'], '%Y-%m-%d %H:%M:%S'))
+            date = make_aware(parser.parse(input_data['date']))
         except ValueError:
             raise ValidationError('日付の入力形式が間違っています')
         if not self.instance:
             if Game.objects.filter(date=date):
                 raise ValidationError('同時に開催されている試合があるようです。時刻をずらしてください。')
-
-        if date > make_aware(datetime.datetime.now()):
-            raise ValidationError('未来の結果を入力することはできません')
 
         not_none = 0
         ranks = []

@@ -1,3 +1,13 @@
+{% if form.non_field_errors %}
+<div class="row gx-0 mb-1 border border-danger rounded-3">
+    <p class="text-dark my-0 ps-2">エラー</p>
+    <p class="small m-0 ps-3 text-danger">
+        {% for error in form.non_field_errors %}
+            {{ error }}<br>
+        {% endfor %}
+    </p>
+    </div>
+{% endif %}
 {% for field in form %}
 <div class="row gx-0">
     <div class="col-4">
