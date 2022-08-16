@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block contents %}
-        <h4 class="bg-secondary text-white p-1">{{ team }}　メンバーリスト</h4>
+        <h4 class="bg-secondary text-white p-1">{{ team }}　メンバーリスト（全{{ player_list|length }}件）</h4>
         <div class="d-flex justify-content-end mb-4">
             <a class="btn btn-primary" href="{% url 'multi:player_create' %}">メンバー追加</a>
         </div>
