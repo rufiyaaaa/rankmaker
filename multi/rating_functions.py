@@ -16,7 +16,7 @@ def eq_rating(old, even):
     return new
 
 
-def calc_duel_rating(game=Game()):
+def calc_duel_rating(game):
     # Duelごとのレーティング変化を計算し、差分として記録する（のちに統合するため）
     duel_set = game.duel_game.all()
     for duel in duel_set:
@@ -43,7 +43,9 @@ def calc_game_rating(game=Game()):
         for rating in rating_set:
             rating_diff += rating.rating_diff
         participant.new_rating = old_rating + rating_diff
-        participant.player.ltst_rating = math.floor(participant.new_rating)
+        participant.old_rating = old_rating
+        participant.rating_diff = rating_diff
+        participant.player.ltst_rating = participant.new_rating
         participant.save()
         participant.player.save()
 
@@ -100,12 +102,34 @@ def participant_registration(result, game=Game()):
     participant.save()
 
 
-def refresh_rating(date, team):
-    """与えられた日時以降のGameを列挙し、早いものから順に再計算をかける"""
-    game_set = Game.objects.filter(team=team).filter(date__gte=date).order_by('date')
-    for game in game_set:
-        calc_duel_rating(game)   # Duelごとのレーティング変化量を計算
-        calc_game_rating(game)   # 上記レーティング変化量からGame単位のレーティング変化量を計算し、Participantに反映
+def refresh_rating(game):
+    """与えられたGameを計算する"""
+    calc_duel_rating(game)   # Duelごとのレーティング変化量を計算
+    calc_game_rating(game)   # 上記レーティング変化量からGame単位のレーティング変化量を計算し、Participantに反映
+    game.need_to_recalc = False
+    game.save()
+
+
+def put_badge(game_calculated):
+    """与えられた日時以降のGameから参加者が共通しているものを探し、要再計算をTrueにする"""
+    date = game_calculated.date
+    team = game_calculated.team
+    participant_records = Participant.objects.filter(game=game_calculated)    # gameの参加者を取得
+    competitors = set()
+    for participant in participant_records:
+        competitors.add(participant.player)
+
+    future_games = Game.objects.filter(team=team).filter(date__gt=date).order_by('date')
+
+    for game in future_games:
+        comparable_competitors = set()
+        comparable_participant_records = Participant.objects.filter(game=game)
+        for participant in comparable_participant_records:  # レコードから集合に値を移動
+            comparable_competitors.add(participant.player)
+
+        if len(competitors & comparable_competitors) != 0:
+            game.need_to_recalc = True
+            game.save()
 
 
 # def participant_update(rank_data, game=Game()):
@@ -135,6 +159,21 @@ def separate(data, game=Game()):
             if data[key] != '':     # 順位が空欄でなければ
                 rank_data.append([key, int(data[key])])      # 二次元配列の形でrank_dataに突っ込む。左が名前、右が順位
     rank_data.sort(key=lambda x: x[1])              # 順位でソートする
+    for result in rank_data:
+        participant_registration(result, game)
+        # 仮のRatingレコードも↑で作成(duelを作った時にそれに対して作成するのがスマート）
+    for player_pair in itertools.combinations(rank_data, 2):
+        duel_registration(player_pair, game)
+
+
+def separate_1on1(data, game=Game()):
+    """GameをもとにParticipantを登録。1vs1に分解しDuelを登録しレーティングの計算を行う。"""
+
+    if "even" in data:
+        rank_data = [[data["winner"], 1], [data["loser"], 1]]
+    else:
+        rank_data = [[data["winner"], 1], [data["loser"], 2]]
+        rank_data.sort(key=lambda x: x[1])              # 順位でソートする
     for result in rank_data:
         participant_registration(result, game)
         # 仮のRatingレコードも↑で作成(duelを作った時にそれに対して作成するのがスマート）

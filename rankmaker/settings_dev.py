@@ -6,7 +6,7 @@ SECRET_KEY = 'django-insecure-)#!_k&_1kqfad*5(5%!nqy=6@r$h+pncyr4s_&&cgh8(yk_y!1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["192.168.11.25"]
+ALLOWED_HOSTS = ["127.0.0.1"]
 
 # ロギング設定
 LOGGING = {

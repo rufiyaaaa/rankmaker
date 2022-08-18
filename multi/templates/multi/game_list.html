@@ -13,20 +13,27 @@
 {% block contents %}
 <h4 class="bg-secondary text-white p-1">{{ team }}の対戦結果一覧</h4>
 <div class="d-flex justify-content-end mb-4">
-    <a class="btn btn-primary" href="{% url 'multi:game_create' %}">対戦結果登録</a>
+    <a class="btn btn-primary" href="{% if team.one_on_one %}{% url 'multi:game_create_1on1' %}{% else %}{% url 'multi:game_create' %}{% endif %}">対戦結果登録</a>
 </div>
 {% for game in game_list %}
 <a href="{% url 'multi:game_detail' game.pk %}" class="text-decoration-none"><!--pk=プライマリキー-->
     <div class="row mx-0 mb-2 border">
-        <div class="col-md-8 h2 mb-0 bg-light">{{ game.name }}{% if game.name == '' %}タイトルなし{% endif %}</div>
+        <div class="col-md-8 h2 mb-0 bg-light">
+            {{ game.name }}{% if game.name == '' %}タイトルなし{% endif %}
+        </div>
 
         <div class="col-md-4 bg-light text-dark">
-            <p class="text-end mb-0">{{ game.date }}</p>
+            <p class="text-start text-md-end mb-0">
+                {{ game.date }}
+                {% if game.need_to_recalc %}
+                <span class="badge bg-danger">要再計算</span>
+                {% endif %}
+            </p>
         </div>
         <div class="col-12 bg-light text-dark">
-            {% for pl in game.participant_game.all|dictsort:"rank" %}
-            {{ pl.rank }}位:{{pl.player.name}}{% if not forloop.last %}、{% endif %}
-            {% endfor %}
+                {% for pl in game.participant_game.all|dictsort:"rank" %}
+                    {{ pl.rank }}位:{{pl.player.name}}{% if not forloop.last %}、{% endif %}
+                {% endfor %}
         </div>
     </div>
 </a>

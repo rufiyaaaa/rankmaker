@@ -9,53 +9,77 @@
 
 {% block contents %}
 
-        <h4 class="bg-secondary text-white p-1">メンバー情報</h4>
-        <div class="row">
-            <div class="col-4">
-                <strong>ID</strong>
-            </div>
-            <div class="col-8">
-                {{ object.id }}
-            </div>
-        </div>
+<h4 class="bg-secondary text-white p-1">メンバー情報</h4>
+<div class="row">
+    <div class="col-4">
+        <strong>ID</strong>
+    </div>
+    <div class="col-8">
+        {{ object.id }}
+    </div>
+</div>
 
+<hr class="my-1">
+
+<div class="row">
+    <div class="col-4">
+        <strong>名前</strong>
+    </div>
+    <div class="col-8">
+        {{ object.name }}
+    </div>
+</div>
+<hr class="my-1">
+
+<div class="row">
+    <div class="col-4">
+        <strong>現役／引退</strong>
+    </div>
+    <div class="col-8">
+        {% if object.inactive == True %}
+        引退
+        {% else %}
+        現役
+        {% endif %}
+    </div>
+</div>
+<hr class="my-1">
+
+<div class="row">
+    <div class="col-4">
+        <strong>対戦数</strong>
+    </div>
+    <div class="col-8">
+        {{ object.match_exp }}試合
+    </div>
+</div>
+<hr class="my-1">
+
+<div class="row">
+    <div class="col-4">
+        <strong>レーティング履歴</strong>
+    </div>
+    <div class="col-8">
+
+        {% for record in participant_set %}
+        {% if forloop.counter == 1 %}{% else %}
         <hr class="my-1">
+        {% endif %}
 
-        <div class="row">
-            <div class="col-4">
-                <strong>名前</strong>
+        <a href="{% url 'multi:game_detail' record.game.pk %}" class="text-decoration-none">
+            <div class="row gx-0">
+                <div class="col-6">{{ record.game.date }}</div>
+                <div class="col-2">{{ record.rank }}位</div>
+                <div class="col-2">{{ record.new_rating|floatformat:2 }}</div>
+                <div class="col-2">({% if record.rating_diff >= 0 %}+{% endif %}{{ record.rating_diff|floatformat:2 }})</div>
             </div>
-            <div class="col-8">
-                {{ object.name }}
-            </div>
-        </div>
-        <hr class="my-1">
+        </a>
+        {% endfor %}
+    </div>
+</div>
+<hr class="my-1">
 
-        <div class="row">
-            <div class="col-4">
-                <strong>現役／引退</strong>
-            </div>
-            <div class="col-8">
-                {% if object.inactive == True %}
-                引退
-                {% else %}
-                現役
-                {% endif %}
-            </div>
-        </div>
-        <hr class="my-1">
-
-        <div class="row">
-            <div class="col-4">
-                <strong>対戦数</strong>
-            </div>
-            <div class="col-8">
-                {{ object.match_exp }}試合
-            </div>
-        </div>
-        <hr class="my-1">
-
-        <a href="{% url 'multi:player_update' object.pk %}" class="btn btn-primary mt-3 mb-3">編集</a>
-        <a href="{% url 'multi:player_list' %}" class="btn btn-secondary mt-3 mb-3">戻る</a>
+<a href="{% url 'multi:player_update' object.pk %}" class="btn btn-primary mt-3 mb-3">編集</a>
+<a href="{{request.META.HTTP_REFERER}}" class="btn btn-secondary mt-3 mb-3">戻る</a>
 
 {% endblock %}

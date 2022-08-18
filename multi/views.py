@@ -3,15 +3,15 @@ import datetime
 from django import forms
 
 from django.urls import reverse_lazy
+from django.utils.timezone import make_aware
 from django.views import generic
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .rating_functions import refresh_rating, separate
-from .models import Affiliation, Player, Game, Team, Participant, Notice
-from .forms import GameCreateForm, PlayerCreateForm, TeamCreateForm, TeamConfigForm, BatchPlayerCreateForm
+from .rating_functions import put_badge, separate, separate_1on1, refresh_rating
+from .models import Affiliation, Player, Game, Duel, Rating, Team, Participant, Notice
+from .forms import GameCreate1on1Form, GameCreateForm, PlayerCreateForm, TeamCreateForm, TeamConfigForm, BatchPlayerCreateForm
 from django.core.exceptions import ValidationError
-
 
 logger = logging.getLogger(__name__)
 
@@ -113,13 +113,61 @@ class GameCreateView(LoginRequiredMixin, generic.CreateView):  # 本丸
         game = form.save(commit=False)
         affl = Affiliation.objects.get(user=self.request.user)
         game.team = affl.team
+        game.date = make_aware(game.date)
         game.save()
 
         # 参加者とその順位から、Duel、Participantを作成
         separate(form.data, game)
 
         # レーティングの更新処理をする。キーとなる引数は、Game.date
-        refresh_rating(game.date, game.team)
+        refresh_rating(game)
+
+        # 更新が必要なGameにバッヂ付けをする
+        put_badge(game)
+
+        messages.success(self.request, "対戦結果を登録しました。")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):  # formのバリデーションに問題があるときに実行
+
+        messages.error(self.request, "対戦結果の登録に失敗しました。")
+        return super().form_invalid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('multi:game_list')
+
+
+class GameCreate1on1View(LoginRequiredMixin, generic.CreateView):  # 本丸
+    model = Game
+    template_name = 'multi/game_create_1on1.html'
+    form_class = GameCreate1on1Form
+
+    def get_initial(self):
+        game = self.object
+        initial = super().get_initial()
+        initial['players'] = Player.objects.filter(team=game.team).order_by('id')
+        initial['winner'] = initial['players'].first
+        initial['loser'] = initial['players'].first
+        initial['even'] = "off"
+        return initial
+
+    def form_valid(self, form):  # formのバリデーションに問題がなければ実行
+        # formの情報から、gameを作成し情報を登録
+        game = form.save(commit=False)
+        affl = Affiliation.objects.get(user=self.request.user)
+        game.team = affl.team
+        game.date = make_aware(game.date)
+        game.save()
+
+        # 参加者とその順位から、Duel、Participantを作成
+        separate_1on1(form.data, game)
+
+        # レーティングの更新処理をする。キーとなる引数は、Game.date
+        refresh_rating(game)
+
+        # 更新が必要なGameにバッヂ付けをする
+
+        put_badge(game)
 
         messages.success(self.request, "対戦結果を登録しました。")
         return super().form_valid(form)
@@ -154,6 +202,7 @@ class GameUpdateView(LoginRequiredMixin, generic.UpdateView):
         game = form.save(commit=False)
         affl = Affiliation.objects.get(user=self.request.user)
         game.team = affl.team
+        game.date = make_aware(game.date)
         game.save()
 
         # Duel, Participantを一旦全削除
@@ -164,7 +213,57 @@ class GameUpdateView(LoginRequiredMixin, generic.UpdateView):
         separate(form.data, game)
 
         # レーティングの更新処理をする。キーとなる引数は、Game.date
-        refresh_rating(game.date, game.team)
+        refresh_rating(game)
+
+        # 更新が必要なGameにバッヂ付けをする
+
+        put_badge(game)
+
+        messages.success(self.request, "対戦結果を登録しました。")
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "対戦結果の更新に失敗しました。")
+        return super().form_invalid(form)
+
+
+class GameUpdate1on1View(LoginRequiredMixin, generic.UpdateView):
+    model = Game
+    template_name = 'multi/game_update_1on1.html'
+    form_class = GameCreate1on1Form
+
+    def get_initial(self):
+        game = self.object
+        initial = super().get_initial()
+        initial['players'] = Player.objects.filter(team=game.team).order_by('id')
+        initial['winner'] = Duel.objects.get(game=game).winner.id
+        initial['loser'] = Duel.objects.get(game=game).loser.id
+        initial['even'] = Duel.objects.get(game=game).even
+        return initial
+
+    def get_success_url(self):
+        return reverse_lazy('multi:game_detail', kwargs={'pk': self.kwargs['pk']})
+
+    def form_valid(self, form):  # formのバリデーションに問題がなければ実行
+        # formの情報から、gameを作成し情報を登録
+        game = form.save(commit=False)
+        affl = Affiliation.objects.get(user=self.request.user)
+        game.team = affl.team
+        game.date = make_aware(game.date)
+        game.save()
+
+        # Duel, Participantを一旦全削除
+        game.duel_game.all().delete()
+        game.participant_game.all().delete()
+
+        # 参加者とその順位から、Duel、Participationを作成
+        separate_1on1(form.data, game)
+
+        # レーティングの更新処理をする。キーとなる引数は、Game.date
+        refresh_rating(game)
+
+        # 更新が必要なGameにバッヂ付けをする
+        put_badge(game)
 
         messages.success(self.request, "対戦結果を登録しました。")
         return super().form_valid(form)
@@ -186,13 +285,11 @@ class GameDeleteView(LoginRequiredMixin, generic.DeleteView):
         return context
 
     def delete(self, request, *args, **kwargs):
-        pk = self.kwargs['pk']
-        date = Game.objects.get(pk=pk).date
-        team = Game.objects.get(pk=pk).team
+        pk = self.kwargs['pk']  # 後でゲーム情報が必要になるので、削除前に取り出しておく
+        game = Game.objects.get(pk=pk)
+        put_badge(game)
         messages.success(self.request, "対戦結果を削除しました。")
         delete = super().delete(request, *args, **kwargs)
-        # レーティングの更新処理をする。
-        refresh_rating(date, team)
         return delete
 
 
@@ -221,6 +318,7 @@ class PlayerDetailView(LoginRequiredMixin, generic.DetailView):
         affl = Affiliation.objects.get(user=self.request.user)
         context = super().get_context_data(**kwargs)
         context['team'] = affl.team
+        context['participant_set'] = Participant.objects.filter(player=self.object).order_by('game__date')
         return context
 
 

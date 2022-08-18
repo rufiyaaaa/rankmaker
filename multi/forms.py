@@ -52,10 +52,15 @@ class TeamConfigForm(forms.ModelForm):
         required=False,
         help_text="ランキングをシェアする際の文字列を設定します。<br>5文字以上20文字以下の半角英数字で、他のチームですでに使用されている文字列は設定できません。"
     )
+    one_on_one = forms.ChoiceField(
+        label='デフォルト入力方式',
+        help_text='対戦結果登録時、初めに表示される入力方式を選択できます',
+        choices=((True, '1対1対戦'), (False, '多人数対戦'))
+    )
 
     class Meta:
         model = Team
-        fields = ('name', 'description', 'page_id')
+        fields = ('name', 'description', 'page_id', 'one_on_one')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -65,16 +70,16 @@ class TeamConfigForm(forms.ModelForm):
 
 class GameCreateForm(forms.ModelForm):
     name = forms.CharField(
-        label='試合タイトル',
+        label='対戦タイトル',
         max_length=50,
         required=False,
-        help_text='一覧に表示されますので、わかりやすい名前をつけてあげてください'
+        help_text='一覧に表示されますので、わかりやすい名前をつけてみてください'
     )
     date = forms.DateTimeField(
-        label='試合日時',
+        label='対戦日時',
         required=True,
         initial=make_aware(datetime.datetime.now()),
-        help_text='試合の前後を判断するのに用います。<br>秒は省略できます。時・分・秒をまるまる省略した場合、０時ちょうどとみなされます。'
+        help_text='対戦の前後を判断するのに用います。<br>秒は省略できます。時・分・秒をまるまる省略した場合、０時ちょうどとみなされます。'
     )
 
     def __init__(self, *args, **kwargs):
@@ -149,7 +154,67 @@ class GameCreateForm(forms.ModelForm):
         return input_data
 
 
+class GameCreate1on1Form(forms.ModelForm):
+    name = forms.CharField(
+        label='対戦タイトル',
+        max_length=50,
+        required=False,
+        help_text='一覧に表示されますので、わかりやすい名前をつけてあげてください'
+    )
+    date = forms.DateTimeField(
+        label='対戦日時',
+        required=True,
+        initial=make_aware(datetime.datetime.now()),
+        help_text='試合の前後を判断するのに用います。<br>秒は省略できます。時・分・秒をまるまる省略した場合、０時ちょうどとみなされます。'
+    )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        initial = kwargs.pop('initial')
+        player_set = initial.pop('players')
+        player_list = []
+        for player in player_set:
+            player_list += [(player.pk, player.name)]
+        players = tuple(player_list)
+
+        self.fields["winner"] = forms.ChoiceField(label="勝者", required=True, choices=players)
+        self.fields["loser"] = forms.ChoiceField(label="敗者", required=True, choices=players)
+        self.fields["even"] = forms.BooleanField(label="引き分け", required=False, help_text='引き分けの場合チェックをオンにします')
+
+        if 'winner' in initial:
+            self.fields['winner'].initial = initial.pop('winner')
+            self.fields['loser'].initial = initial.pop('loser')
+            self.fields['even'].initial = initial.pop('even')
+
+        for field in self.fields.values():
+            if field.label != "引き分け":
+                field.widget.attrs['class'] = 'form-control align-middle'
+        # self.fields['date'].widget.attrs['id'] = 'datepicker'
+
+    class Meta:
+        model = Game
+        fields = ('name', 'date')
+
+    def is_valid(self):
+        return super().is_valid()
+
+    def clean(self):
+        input_data = self.data
+
+        try:
+            date = make_aware(parser.parse(input_data['date']))
+        except ValueError:
+            raise ValidationError('日付の入力形式が間違っています')
+        if not self.instance:
+            if Game.objects.filter(date=date):
+                raise ValidationError('同時に開催されている試合があるようです。時刻をずらしてください。')
+
+        winner = input_data.get("winner")
+        loser = input_data.get("loser")
+        if winner == loser:
+            raise forms.ValidationError("勝者と敗者は異なるプレイヤーとしてください")
+
+        return input_data
 
 
 

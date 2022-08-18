@@ -42,8 +42,10 @@
                     {% for participant in participants %}
                     {% if forloop.counter == 1 %}{% else %}<hr class="my-1">{% endif %}
                     <div class="col-2">{{ participant.rank }}位</div>
-                    <div class="col-8">{{ participant.player.name }}</div>
-                    <div class="col-2">{{ participant.player.ltst_rating }}</div>
+                    <div class="col-5">{{ participant.player.name }}</div>
+                    <div class="col-5 text-end pe-1">{{ participant.old_rating|floatformat:2 }}→{{ participant.new_rating|floatformat:2 }}<br>
+                        ({% if participant.rating_diff >= 0 %}+{% endif %}{{ participant.rating_diff|floatformat:2 }})</div>
+
                     {% endfor %}
                 </div>
             </div>
@@ -52,8 +54,9 @@
         <hr class="my-1">
 
 
-        <a href="{% url 'multi:game_update' object.pk %}" class="btn btn-primary mt-5 mb-3">編集</a>
+        <a href="{% if object.one_on_one %}{% url 'multi:game_update_1on1' object.pk %}{% else %}{% url 'multi:game_update' object.pk %}{% endif %}" class="btn btn-primary mt-5 mb-3">編集</a>
         <a href="{% url 'multi:game_delete' object.pk %}" class="btn btn-danger mt-5 mb-3 ml-2">削除</a>
-        <a href="{% url 'multi:game_list' %}" class="btn btn-secondary mt-5 mb-3">戻る</a>
+        <a href="{{request.META.HTTP_REFERER}}" class="btn btn-secondary mt-5 mb-3">戻る</a>
+        <a href="{% url 'multi:game_list' %}" class="btn btn-secondary mt-5 mb-3">対戦結果一覧に戻る</a>
 
         {% endblock %}

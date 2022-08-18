@@ -16,7 +16,19 @@ class Team(models.Model):
 
     name = models.CharField(verbose_name='チーム名', max_length=50, default="<チーム名>")
     est_date = models.DateTimeField(verbose_name='登録日', auto_now_add=True)
-    description = models.TextField(verbose_name='説明', max_length=500, blank=True, null=True)
+    one_on_one = models.BooleanField(
+        verbose_name='デフォルト入力方式',
+        default=False,
+        blank=True,
+        help_text='対戦結果登録時に使用したい入力方式を選択できます'
+    )
+    description = models.TextField(
+        verbose_name='説明',
+        max_length=500,
+        blank=True,
+        null=True,
+        help_text='チームの説明を入力します。ランキングをシェアした際に表示されます。'
+    )
     page_id = models.CharField(
         verbose_name="キーフレーズ",
         max_length=20,
@@ -42,7 +54,7 @@ class Player(models.Model):
     team = models.ForeignKey(Team, verbose_name='所属', on_delete=models.CASCADE)
     name = models.CharField(verbose_name='プレイヤー', max_length=10000)
     inactive = models.BooleanField(verbose_name='引退', default=False, blank=True)
-    ltst_rating = models.IntegerField(verbose_name='最新レーティング', default=0)
+    ltst_rating = models.FloatField(verbose_name='最新レーティング', default=0.0)
 
     class Meta:
         verbose_name_plural = 'Player'
@@ -92,7 +104,11 @@ class Game(models.Model):
     """ゲームモデル"""
     name = models.CharField(verbose_name='試合名称', max_length=50, blank=True, null=True)
     team = models.ForeignKey(Team, verbose_name='チーム', on_delete=models.CASCADE)
-    date = models.DateTimeField(verbose_name='試合日時', default=datetime.now)
+    date = models.DateTimeField(verbose_name='試合日時', default=timezone.now)
+    last_modify = models.DateTimeField(verbose_name="最終更新日", default=timezone.now)
+    one_on_one = models.BooleanField(verbose_name="1対1対戦", default=False, blank=True)
+    need_to_recalc = models.BooleanField(verbose_name="要再計算", default=True)
+    memo = models.TextField(verbose_name="コメント", blank=True)
 
     class Meta:
         verbose_name_plural = 'Game'
@@ -117,6 +133,8 @@ class Participant(models.Model):
     )
     rank = models.IntegerField(verbose_name='順位', default=0)
     new_rating = models.FloatField(verbose_name='対戦後のレーティング', default=1500.0)
+    old_rating = models.FloatField(verbose_name='対戦前のレーティング', default=1500.0)
+    rating_diff = models.FloatField(verbose_name='レーティング変化', default=0.0)
     appr_rating = models.IntegerField(verbose_name='修正レーティング', default=0)
 
     class Meta:

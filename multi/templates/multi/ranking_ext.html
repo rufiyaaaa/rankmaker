@@ -16,6 +16,7 @@
 
         <h4 class="bg-secondary text-white p-1">{{ team.name }} 最新ランキング</h4>
         <div>
+            <p class="small border p-2">チーム説明：{{ team.description }}</p>
             <table class="table">
                 <tr>
                     <th>順位</th>
@@ -27,7 +28,7 @@
                 <tr>
                     <th>{{ forloop.counter }}</th>
                     <td>{{ player.name }}</td>
-                    <td>{{ player.ltst_rating }}</td>
+                    <td>{{ player.ltst_rating|floatformat:2 }}</td>
                 </tr>
                 {% empty %}
                 <tr>

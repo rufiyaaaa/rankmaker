@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block contents %}
-        <h4 class="bg-secondary text-white p-1">{{ team }}　メンバーリスト（全{{ player_list|length }}件）</h4>
+        <h4 class="bg-secondary text-white p-1">{{ team }}　メンバーリスト</h4>
         <div class="d-flex justify-content-end mb-4">
             <a class="btn btn-primary" href="{% url 'multi:player_create' %}">メンバー追加</a>
         </div>
@@ -31,7 +31,7 @@
                 </td>
                 <td>{{ player.match_exp }}</td>
                 <td>{{ player.ltst_rating }}</td>
-                <td><a href="{% url 'multi:player_detail' player.pk %}">詳細</a></td>
+                <td><a href="{% url 'multi:player_detail' player.pk %}" class="text-decoration-none">詳細</a></td>
             </tr>
             {% empty %}
             <tr>
