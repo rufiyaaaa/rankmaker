@@ -11,10 +11,10 @@
 
         <h4 class="bg-secondary text-white p-1">対戦結果</h4>
         <div class="row">
-            <div class="col-4">
+            <div class="col-3">
                 <strong>試合タイトル</strong>
             </div>
-            <div class="col-8">
+            <div class="col-9">
                 {% if object.name != "" %}{{ object.name }}{% else %}タイトルなし{% endif %}
             </div>
         </div>
@@ -22,10 +22,10 @@
         <hr class="my-1">
 
         <div class="row">
-            <div class="col-4">
+            <div class="col-3">
                 <strong>試合日時</strong>
             </div>
-            <div class="col-8">
+            <div class="col-9">
                 {{ object.date }}
             </div>
         </div>
@@ -33,17 +33,17 @@
         <hr class="my-1">
 
         <div class="row">
-            <div class="col-4">
+            <div class="col-3">
                 <strong>対戦結果</strong>
             </div>
 
-            <div class="col-8">
+            <div class="col-9">
                 <div class="row gx-0">
                     {% for participant in participants %}
                     {% if forloop.counter == 1 %}{% else %}<hr class="my-1">{% endif %}
                     <div class="col-2">{{ participant.rank }}位</div>
-                    <div class="col-5">{{ participant.player.name }}</div>
-                    <div class="col-5 text-end pe-1">{{ participant.old_rating|floatformat:2 }}→{{ participant.new_rating|floatformat:2 }}<br>
+                    <div class="col-sm-4 col-10">{{ participant.player.name }}</div>
+                    <div class="col-sm-6 col-12 text-end pe-1">{{ participant.old_rating|floatformat:2 }}→{{ participant.new_rating|floatformat:2 }}
                         ({% if participant.rating_diff >= 0 %}+{% endif %}{{ participant.rating_diff|floatformat:2 }})</div>
 
                     {% endfor %}

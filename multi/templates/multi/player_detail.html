@@ -11,10 +11,10 @@
 
 <h4 class="bg-secondary text-white p-1">メンバー情報</h4>
 <div class="row">
-    <div class="col-4">
+    <div class="col-3">
         <strong>ID</strong>
     </div>
-    <div class="col-8">
+    <div class="col-9">
         {{ object.id }}
     </div>
 </div>
@@ -22,20 +22,20 @@
 <hr class="my-1">
 
 <div class="row">
-    <div class="col-4">
+    <div class="col-3">
         <strong>名前</strong>
     </div>
-    <div class="col-8">
+    <div class="col-9">
         {{ object.name }}
     </div>
 </div>
 <hr class="my-1">
 
 <div class="row">
-    <div class="col-4">
+    <div class="col-3">
         <strong>現役／引退</strong>
     </div>
-    <div class="col-8">
+    <div class="col-9">
         {% if object.inactive == True %}
         引退
         {% else %}
@@ -46,20 +46,20 @@
 <hr class="my-1">
 
 <div class="row">
-    <div class="col-4">
+    <div class="col-3">
         <strong>対戦数</strong>
     </div>
-    <div class="col-8">
+    <div class="col-9">
         {{ object.match_exp }}試合
     </div>
 </div>
 <hr class="my-1">
 
 <div class="row">
-    <div class="col-4">
+    <div class="col-3">
         <strong>レーティング履歴</strong>
     </div>
-    <div class="col-8">
+    <div class="col-9">
 
         {% for record in participant_set %}
         {% if forloop.counter == 1 %}{% else %}
@@ -68,10 +68,9 @@
 
         <a href="{% url 'multi:game_detail' record.game.pk %}" class="text-decoration-none">
             <div class="row gx-0">
-                <div class="col-6">{{ record.game.date }}</div>
-                <div class="col-2">{{ record.rank }}位</div>
-                <div class="col-2">{{ record.new_rating|floatformat:2 }}</div>
-                <div class="col-2">({% if record.rating_diff >= 0 %}+{% endif %}{{ record.rating_diff|floatformat:2 }})</div>
+                <div class="col-sm-6 col-12">{{ record.game.date }}</div>
+                <div class="col-sm-2 col-4 text-end">{{ record.rank }}位</div>
+                <div class="col-sm-4 col-8 text-end">{{ record.new_rating|floatformat:2 }} ({% if record.rating_diff >= 0 %}+{% endif %}{{ record.rating_diff|floatformat:2 }})</div>
             </div>
         </a>
         {% endfor %}
