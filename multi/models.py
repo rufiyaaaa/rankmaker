@@ -107,7 +107,7 @@ class Game(models.Model):
     date = models.DateTimeField(verbose_name='試合日時', default=timezone.now)
     last_modify = models.DateTimeField(verbose_name="最終更新日", default=timezone.now)
     one_on_one = models.BooleanField(verbose_name="1対1対戦", default=False, blank=True)
-    need_to_recalc = models.BooleanField(verbose_name="要再計算", default=True)
+    need_to_recalc = models.BooleanField(verbose_name="要再計算", default=False)
     memo = models.TextField(verbose_name="コメント", blank=True)
 
     class Meta:
