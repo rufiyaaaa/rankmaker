@@ -149,7 +149,7 @@ class GameCreate1on1View(LoginRequiredMixin, generic.CreateView):  # 本丸
         initial['players'] = Player.objects.filter(team=affl.team).order_by('id')
         initial['winner'] = initial['players'].first
         initial['loser'] = initial['players'].first
-        initial['even'] = "off"
+        initial['even'] = None
         return initial
 
     def form_valid(self, form):  # formのバリデーションに問題がなければ実行
