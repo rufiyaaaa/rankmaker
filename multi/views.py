@@ -143,9 +143,10 @@ class GameCreate1on1View(LoginRequiredMixin, generic.CreateView):  # 本丸
     form_class = GameCreate1on1Form
 
     def get_initial(self):
-        game = self.object
+        user = self.request.user
+        affl = Affiliation.objects.get(user=user)
         initial = super().get_initial()
-        initial['players'] = Player.objects.filter(team=game.team).order_by('id')
+        initial['players'] = Player.objects.filter(team=affl.team).order_by('id')
         initial['winner'] = initial['players'].first
         initial['loser'] = initial['players'].first
         initial['even'] = "off"
