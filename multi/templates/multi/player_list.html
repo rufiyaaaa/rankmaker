@@ -30,7 +30,7 @@
                     {% endif %}
                 </td>
                 <td>{{ player.match_exp }}</td>
-                <td>{{ player.ltst_rating }}</td>
+                <td>{{ player.ltst_rating|floatformat:2 }}</td>
                 <td><a href="{% url 'multi:player_detail' player.pk %}" class="text-decoration-none">詳細</a></td>
             </tr>
             {% empty %}
