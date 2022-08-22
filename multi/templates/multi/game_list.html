@@ -41,6 +41,11 @@
 <p>対戦結果がありません。</p>
 {% endfor %}
 
+<p class="small">
+    ※古い対戦を再計算した場合、より新しい試合の再計算が必要となる場合があります。<br>
+    <span class="badge bg-danger">要再計算</span>と表示されている対戦を、古いものから順に再計算してください。
+</p>
+
 <!--  ページネーション処理  -->
 {% if is_paginated %}
 <ul class="pagination">
