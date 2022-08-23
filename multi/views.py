@@ -70,7 +70,7 @@ class RankingExtView(generic.TemplateView):
 class GameListView(LoginRequiredMixin, generic.ListView):
     model = Game
     template_name = 'multi/game_list.html'
-    paginate_by = 5
+    paginate_by = 10
 
     def get_queryset(self):
         affl = Affiliation.objects.get(user=self.request.user)
@@ -498,3 +498,21 @@ class NoticeListView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         return Notice.objects.all().order_by('-release_date')
+
+
+def recalc(request, pk):
+    """再計算"""
+    game = get_object_or_404(Game, pk=pk)
+
+    if request.method == 'POST':
+        # 再計算処理
+
+        # レーティングの更新処理をする。キーとなる引数は、Game.date
+        refresh_rating(game)
+
+        # 更新が必要なGameにバッヂ付けをする
+
+        put_badge(game)
+
+        messages.success(request, "再計算しました。")
+    return redirect('multi:game_list')

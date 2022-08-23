@@ -13,37 +13,44 @@
 {% block contents %}
 <h4 class="bg-secondary text-white p-1">{{ team }}の対戦結果一覧</h4>
 <div class="d-flex justify-content-end mb-4">
-    <a class="btn btn-primary" href="{% if team.one_on_one %}{% url 'multi:game_create_1on1' %}{% else %}{% url 'multi:game_create' %}{% endif %}">対戦結果登録</a>
+    <a class="btn btn-primary"
+       href="{% if team.one_on_one %}{% url 'multi:game_create_1on1' %}{% else %}{% url 'multi:game_create' %}{% endif %}">対戦結果登録</a>
 </div>
 {% for game in game_list %}
-<a href="{% url 'multi:game_detail' game.pk %}" class="text-decoration-none"><!--pk=プライマリキー-->
-    <div class="row mx-0 mb-2 border">
-        <div class="col-md-8 h2 mb-0 bg-light">
-            {{ game.name }}{% if game.name == '' %}タイトルなし{% endif %}
-        </div>
+<div class="row mx-0 mb-2 border">
 
-        <div class="col-md-4 bg-light text-dark">
-            <p class="text-start text-md-end mb-0">
-                {{ game.date }}
-                {% if game.need_to_recalc %}
-                <span class="badge bg-danger">要再計算</span>
-                {% endif %}
-            </p>
-        </div>
-        <div class="col-12 bg-light text-dark">
-                {% for pl in game.participant_game.all|dictsort:"rank" %}
-                    {{ pl.rank }}位:{{pl.player.name}}{% if not forloop.last %}、{% endif %}
-                {% endfor %}
-        </div>
+    <a href="{% url 'multi:game_detail' game.pk %}" class="col-md-8 h2 mb-0 bg-light text-decoration-none">
+        <!--pk=プライマリキー-->
+        {{ game.name }}{% if game.name == '' %}タイトルなし{% endif %}
+    </a>
+
+    <div class="col-md-4 bg-light text-dark">
+        <p class="text-start text-md-end mb-0">
+            {{ game.date }}
+        </p>
     </div>
-</a>
+    <a href="{% url 'multi:game_detail' game.pk %}" class="col-12 bg-light text-dark text-decoration-none">
+        <!--pk=プライマリキー-->
+        {% if game.need_to_recalc %}
+        <form action="{% url 'multi:recalc' game.pk %}" method="post" class="m-0">
+            {% csrf_token %}
+            <button type="submit" class="badge bg-danger border-0" name="recalc_button_{{ game.pk }}">要再計算</button>
+
+        </form>
+        {% endif %}
+        {% for pl in game.participant_game.all|dictsort:"rank" %}
+        {{ pl.rank }}位:{{pl.player.name}}({{pl.new_rating|floatformat:0}}){% if not forloop.last %}、{% endif %}
+        {% endfor %}
+    </a>
+</div>
+
 {% empty %}
 <p>対戦結果がありません。</p>
 {% endfor %}
 
 <p class="small">
-    ※古い対戦を再計算した場合、より新しい試合の再計算が必要となる場合があります。<br>
-    <span class="badge bg-danger">要再計算</span>と表示されている対戦を、古いものから順に再計算してください。
+    ※古い対戦を編集した場合、より新しい試合の再計算が必要となる場合があります。<br>
+    より古い対戦から順に<span class="badge bg-danger">要再計算</span>をクリックして再計算してください。
 </p>
 
 <!--  ページネーション処理  -->

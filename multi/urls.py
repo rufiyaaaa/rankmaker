@@ -26,4 +26,5 @@ urlpatterns = [
     path('team-delete/<int:pk>', views.TeamDeleteView.as_view(), name="team_delete"),
     path('notice-list/', views.NoticeListView.as_view(), name="notice_list"),
     path('notice/<int:pk>', views.NoticeDetailView.as_view(), name="notice"),
+    path('recalc/<int:pk>', views.recalc, name="recalc"),
 ]
