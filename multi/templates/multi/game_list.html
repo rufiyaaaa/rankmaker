@@ -34,7 +34,7 @@
         {% if game.need_to_recalc %}
         <form action="{% url 'multi:recalc' game.pk %}" method="post" class="m-0">
             {% csrf_token %}
-            <button type="submit" class="badge bg-danger border-0" name="recalc_button_{{ game.pk }}">要再計算</button>
+            <button type="submit" class="badge bg-danger border-0" name="recalc_button_{{ game.pk }}">再計算</button>
 
         </form>
         {% endif %}
@@ -50,7 +50,7 @@
 
 <p class="small">
     ※古い対戦を編集した場合、より新しい試合の再計算が必要となる場合があります。<br>
-    より古い対戦から順に<span class="badge bg-danger">要再計算</span>をクリックして再計算してください。
+    より古い対戦から順に<span class="badge bg-danger">再計算</span>をクリックして再計算してください。
 </p>
 
 <!--  ページネーション処理  -->
