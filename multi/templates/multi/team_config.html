@@ -19,7 +19,7 @@
             </form>
         </div>
         <div class="ml-auto">
-            <p><a href="{% url 'multi:team_delete' affl.pk %}">チームを削除する</a></p>
+            <p><a href="{% url 'multi:team_delete' affl.team.id %}">チームを削除する</a></p>
         </div>
 
 {% endblock %}

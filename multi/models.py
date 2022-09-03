@@ -16,6 +16,7 @@ class Team(models.Model):
 
     name = models.CharField(verbose_name='チーム名', max_length=50, default="<チーム名>")
     est_date = models.DateTimeField(verbose_name='登録日', auto_now_add=True)
+    owner = models.ForeignKey(CustomUser, verbose_name='作成ユーザー', null=True, blank=True, on_delete=models.CASCADE)
     one_on_one = models.BooleanField(
         verbose_name='デフォルト入力方式',
         default=False,
@@ -89,9 +90,15 @@ class Player(models.Model):
 
 
 class Affiliation(models.Model):
-    """所属モデル"""
+    """各ユーザーが選択中のチームを記録するテーブル"""
     user = models.ForeignKey(CustomUser, verbose_name='ユーザー', on_delete=models.CASCADE, related_name="br_affl_user")
-    team = models.ForeignKey(Team, verbose_name='チーム', on_delete=models.CASCADE, related_name="duel_affl_team")
+    team = models.ForeignKey(
+        Team,
+        verbose_name='チーム',
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="duel_affl_team"
+    )
 
     class Meta:
         verbose_name_plural = 'Affiliations'
@@ -128,7 +135,7 @@ class Participant(models.Model):
     player = models.ForeignKey(
         Player,
         verbose_name='player',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name='participant_player'
     )
     rank = models.IntegerField(verbose_name='順位', default=0)
@@ -148,8 +155,8 @@ class Participant(models.Model):
 class Duel(models.Model):
     """Gameを分解した一対一対戦"""
     game = models.ForeignKey(Game, verbose_name='対応するGame', on_delete=models.CASCADE, related_name='duel_game')
-    winner = models.ForeignKey(Player, verbose_name='勝者', on_delete=models.PROTECT, related_name='duel_win')
-    loser = models.ForeignKey(Player, verbose_name='敗者', on_delete=models.PROTECT, related_name='duel_los')
+    winner = models.ForeignKey(Player, verbose_name='勝者', on_delete=models.CASCADE, related_name='duel_win')
+    loser = models.ForeignKey(Player, verbose_name='敗者', on_delete=models.CASCADE, related_name='duel_los')
     even = models.BooleanField(verbose_name='引き分け')
 
     class Meta:
@@ -164,7 +171,7 @@ class Duel(models.Model):
 class Rating(models.Model):
     """レーティングモデル"""
 
-    player = models.ForeignKey(Player, verbose_name='プレイヤー', on_delete=models.PROTECT)
+    player = models.ForeignKey(Player, verbose_name='プレイヤー', on_delete=models.CASCADE)
     duel = models.ForeignKey(Duel, verbose_name='マッチ', on_delete=models.CASCADE, related_name='rating_duel')
     rating_diff = models.FloatField(verbose_name='レーティング差分', default=0.0)
 

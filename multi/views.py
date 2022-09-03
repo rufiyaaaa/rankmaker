@@ -413,10 +413,15 @@ class TeamCreateView(LoginRequiredMixin, generic.CreateView):
 
     def form_valid(self, form):  # formのバリデーションに問題がなければ実行
         team = form.save(commit=False)
+        team.owner = self.request.user
         team.save()
-        affl = Affiliation()
+        affl = Affiliation.objects.filter(user=self.request.user)
+        if not affl:
+            affl = Affiliation()
+            affl.user = self.request.user
+        else:
+            affl = Affiliation.objects.get(user=self.request.user)
         affl.team = team
-        affl.user = self.request.user
         affl.save()
         self.request.user.have_multi_team = True
         self.request.user.save()
@@ -469,7 +474,7 @@ class TeamConfigView(LoginRequiredMixin, generic.UpdateView):
 
 
 class TeamDeleteView(LoginRequiredMixin, generic.DeleteView):
-    model = Affiliation
+    model = Team
     template_name = 'multi/team_delete.html'
     success_url = reverse_lazy('multi:home')
 
@@ -482,6 +487,10 @@ class TeamDeleteView(LoginRequiredMixin, generic.DeleteView):
     def delete(self, request, *args, **kwargs):
         self.request.user.have_multi_team = False
         self.request.user.save()
+        # afflのteamをnullにする
+        affl = Affiliation.objects.get(user=self.request.user)
+        affl.team = None
+
         messages.success(self.request, "チームを削除しました。")
         return super().delete(request, *args, **kwargs)
 
