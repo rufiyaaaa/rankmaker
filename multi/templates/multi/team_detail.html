@@ -63,10 +63,10 @@
                 {% endif %}
             </div>
         </div>
-
+        <hr>
 
         {% if object.page_id %}
-        <hr>
+
 
         <div class="row">
             <div class="col-4">
@@ -78,9 +78,9 @@
                 </a>
             </div>
         </div>
-
+        <hr>
         {% endif %}
 
-        <a href="{% url 'multi:team_config' %}" class="btn btn-primary mt-5 mb-3">編集</a>
+        <a href="{% url 'multi:team_config' %}" class="btn btn-primary mt-0 mb-3">編集</a>
 
 {% endblock %}

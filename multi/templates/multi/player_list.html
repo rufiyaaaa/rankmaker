@@ -12,7 +12,7 @@
 
 {% block contents %}
         <h4 class="bg-secondary text-white p-1">{{ team }}　メンバーリスト</h4>
-        <div class="d-flex justify-content-end mb-4">
+        <div class="d-flex justify-content-end mb-0">
             <a class="btn btn-primary" href="{% url 'multi:player_create' %}">メンバー追加</a>
         </div>
         <table class="table">
@@ -35,7 +35,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="4">メンバーが登録されていません。</td>
+                <td colspan="5">メンバーが登録されていません。</td>
             </tr>
             {% endfor %}
         </table>

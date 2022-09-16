@@ -1,6 +1,7 @@
 import logging
 import datetime
 from django import forms
+from django.http import HttpResponse, HttpResponseRedirect
 
 from django.urls import reverse_lazy
 from django.utils.timezone import make_aware
@@ -10,7 +11,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .rating_functions import put_badge, separate, separate_1on1, refresh_rating
 from .models import Affiliation, Player, Game, Duel, Rating, Team, Participant, Notice
-from .forms import GameCreate1on1Form, GameCreateForm, PlayerCreateForm, TeamCreateForm, TeamConfigForm, BatchPlayerCreateForm
+from .forms import GameCreate1on1Form, GameCreateForm, PlayerCreateForm, TeamCreateForm, TeamConfigForm, BatchPlayerCreateForm, TeamChoiceForm
 from django.core.exceptions import ValidationError
 
 logger = logging.getLogger(__name__)
@@ -22,7 +23,7 @@ class HomeView(LoginRequiredMixin, generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['username'] = self.request.user
-        context['notice'] = Notice.objects.filter(release_date__lte=datetime.datetime.now()).order_by('-release_date')[0:5]
+        context['notice'] = Notice.objects.filter(release_date__lte=datetime.datetime.now(datetime.timezone.utc)).order_by('-release_date')[0:5]
 
         if Affiliation.objects.filter(user=self.request.user).count() != 0:
             affl = Affiliation.objects.get(user=self.request.user)
@@ -290,8 +291,7 @@ class GameDeleteView(LoginRequiredMixin, generic.DeleteView):
         game = Game.objects.get(pk=pk)
         put_badge(game)
         messages.success(self.request, "対戦結果を削除しました。")
-        delete = super().delete(request, *args, **kwargs)
-        return delete
+        return super().delete(request, *args, **kwargs)
 
 
 class PlayerListView(LoginRequiredMixin, generic.ListView):
@@ -336,7 +336,7 @@ class BatchPlayerCreateView(LoginRequiredMixin, generic.FormView):
             player.team = affl.team
             player.name = name
             player.save()
-        msg = "メンバーを" + str(len(names)) + "件追加しました。"
+        msg = str(len(names)) + "名のメンバーを追加しました。"
         messages.success(self.request, msg)
         return super().form_valid(form)
 
@@ -457,11 +457,21 @@ class TeamConfigView(LoginRequiredMixin, generic.UpdateView):
     def get_object(self, queryset=None):
         return Affiliation.objects.get(user=self.request.user).team
 
+    def get_initial(self):
+        user = self.request.user
+        affl = Affiliation.objects.get(user=user)
+        initial = super().get_initial()
+        initial['affl'] = affl
+
+        return initial
+
     def get_context_data(self, **kwargs):
         affl = Affiliation.objects.get(user=self.request.user)
         context = super().get_context_data(**kwargs)
-        context['affl'] = affl
-        context['team'] = affl.team
+        context.update({
+            'affl': affl,
+            'team': affl.team
+        })
         return context
 
     def form_valid(self, form):
@@ -485,14 +495,41 @@ class TeamDeleteView(LoginRequiredMixin, generic.DeleteView):
     #     return context
 
     def delete(self, request, *args, **kwargs):
-        self.request.user.have_multi_team = False
-        self.request.user.save()
-        # afflのteamをnullにする
-        affl = Affiliation.objects.get(user=self.request.user)
-        affl.team = None
+        team_num = Team.objects.filter(owner=self.request.user).count()
+        if team_num == 1:
+            self.request.user.have_multi_team = False
+            self.request.user.save()
 
         messages.success(self.request, "チームを削除しました。")
-        return super().delete(request, *args, **kwargs)
+        super().delete(request, *args, **kwargs)
+        # afflのteamを適当なTeamにする
+        affl = Affiliation.objects.get(user=self.request.user)
+        affl.team = Team.objects.filter(owner=self.request.user).first()
+        affl.save()
+        return HttpResponseRedirect(self.success_url)
+
+
+class TeamChoiceView(LoginRequiredMixin, generic.UpdateView):
+    model = Affiliation
+    template_name = 'multi/team_choice.html'
+    form_class = TeamChoiceForm
+
+    def get_context_data(self, **kwargs):
+        affl = Affiliation.objects.get(user=self.request.user)
+        context = super().get_context_data(**kwargs)
+        context['team'] = affl.team
+        return context
+
+    def get_success_url(self):
+        return reverse_lazy('multi:team_config')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'チームを変更しました。')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "チームの変更に失敗しました。")
+        return super().form_invalid(form)
 
 
 class NoticeDetailView(LoginRequiredMixin, generic.DetailView):

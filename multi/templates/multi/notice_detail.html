@@ -31,5 +31,5 @@
         </div>
         <hr class="my-1">
 
-        <a href="{% url 'multi:notice_list' %}" class="btn btn-primary mt-3">お知らせ一覧へ</a>
+        <a href="{{request.META.HTTP_REFERER}}" class="btn btn-primary mt-3">戻る</a>
 {% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'multi/center.html' %}
+{% load static %}
+
+{% block title %}チーム選択 | ランクメーカー{% endblock %}
+
+{% block active_team_config %}active{% endblock %}
+
+{% block toplink %}{% url 'multi:home' %}{% endblock %}
+
+{% block contents %}
+
+        <h4 class="bg-secondary text-white p-1">チーム選択</h4>
+        <div class="row">
+            <form class="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% include 'multi/form_fields_loop.html' %}
+                <button class="btn btn-primary" type="submit">選択</button>
+                <a href="{% url 'multi:team_config'%}" class="btn btn-secondary ml-2">キャンセル</a>
+            </form>
+        </div>
+        <div class="ml-auto">
+            <p><a href="{% url 'multi:team_create' %}">チームを追加する</a></p>
+        </div>
+
+{% endblock %}

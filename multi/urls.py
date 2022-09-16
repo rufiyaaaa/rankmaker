@@ -24,6 +24,7 @@ urlpatterns = [
     path('team-detail/', views.TeamDetailView.as_view(), name="team_detail"),
     path('team-config/', views.TeamConfigView.as_view(), name="team_config"),
     path('team-delete/<int:pk>', views.TeamDeleteView.as_view(), name="team_delete"),
+    path('team-choice/<int:pk>', views.TeamChoiceView.as_view(), name="team_choice"),
     path('notice-list/', views.NoticeListView.as_view(), name="notice_list"),
     path('notice/<int:pk>', views.NoticeDetailView.as_view(), name="notice"),
     path('recalc/<int:pk>', views.recalc, name="recalc"),

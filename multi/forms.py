@@ -64,6 +64,30 @@ class TeamConfigForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        initial = kwargs.get('initial')
+        affl = initial.get('affl')
+        team = affl.team
+
+        self.fields["name"] = forms.CharField(label="チーム名", max_length=50, required=True, initial=team.name)
+        self.fields["description"] = forms.ChoiceField(
+            label="チーム説明",
+            required=False,
+            help_text="チームの説明を入力してください。ランキングを公開する場合、ページの上部に表示されます。",
+            initial=team.description
+        )
+        self.fields["page_id"] = forms.CharField(
+            label="キーフレーズ",
+            max_length=20,
+            required=False,
+            help_text="ランキングをシェアする際の文字列を設定します。<br>5文字以上20文字以下の半角英数字で、他のチームですでに使用されている文字列は設定できません。",
+            initial=team.page_id
+        )
+        self.fields["one_on_one"] = forms.ChoiceField(
+            label='デフォルト入力方式',
+            help_text='対戦結果登録時、初めに表示される入力方式を選択できます',
+            choices=((True, '1対1対戦'), (False, '多人数対戦')),
+            initial=team.one_on_one
+        )
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
 
@@ -217,5 +241,30 @@ class GameCreate1on1Form(forms.ModelForm):
         return input_data
 
 
+class TeamChoiceForm(forms.ModelForm):
+    team = forms.ChoiceField(label='チーム')
 
+    class Meta:
+        model = Affiliation
+        fields = ('team',)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        affl = kwargs.get('instance')
+        team_set = Team.objects.filter(owner=affl.user)
+        team_list = []
+        for team in team_set:
+            team_list += [(team.pk, team.name)]
+        teams = tuple(team_list)
+
+        self.fields["team"] = forms.ChoiceField(label='選択中のチーム', required=True, initial=affl.team, choices=teams)
+
+    def is_valid(self):
+        return super().is_valid()
+
+    def clean(self):
+        input_data = self.cleaned_data
+        team_pk = input_data.get('team')
+        input_data['team'] = Team.objects.get(pk=team_pk)
+        return input_data

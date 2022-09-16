@@ -13,7 +13,7 @@
         <div>
             {% if user.have_multi_team %}
                 <table class="table mb-0">
-                    <tr><th colspan="3" class="bg-secondary text-white">最新ランキング</th></tr>
+                    <tr><th colspan="3" class="bg-secondary text-white">{{team}} の最新ランキング</th></tr>
                     <tr><th>順位</th><th>名前</th><th>レーティング</th></tr>
                     {% for player in ranking %}
                         <tr><th>{{ forloop.counter }}</th><td>{{ player.name }}</td><td>{{ player.ltst_rating|floatformat:2 }}</td></tr>

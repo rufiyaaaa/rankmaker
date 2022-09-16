@@ -9,17 +9,20 @@
 
 {% block contents %}
 
-        <h4 class="bg-secondary text-white p-1">チーム情報</h4>
-        <div class="row">
-            <form class="" method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                {% include 'multi/form_fields_loop.html' %}
-                <button class="btn btn-primary" type="submit">更新</button>
-                <a href="{% url 'multi:team_detail'%}" class="btn btn-secondary ml-2">キャンセル</a>
-            </form>
-        </div>
-        <div class="ml-auto">
-            <p><a href="{% url 'multi:team_delete' affl.team.id %}">チームを削除する</a></p>
-        </div>
+<h4 class="bg-secondary text-white p-1">チーム情報</h4>
+<div class="row">
+    <p class="text-end">
+        <a href="{% url 'multi:team_choice' affl.id %}" class="btn btn-primary">チーム変更</a>
+    </p>
+    <form class="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% include 'multi/form_fields_loop.html' %}
+        <button class="btn btn-primary" type="submit" name="button_team_config">更新</button>
+        <a href="{% url 'multi:team_detail'%}" class="btn btn-secondary ml-2">キャンセル</a>
+    </form>
+</div>
+<div class="ml-auto">
+    <p><a href="{% url 'multi:team_delete' affl.team.id %}">チームを削除する</a></p>
+</div>
 
 {% endblock %}

@@ -97,7 +97,7 @@ class Affiliation(models.Model):
         verbose_name='チーム',
         null=True,
         on_delete=models.SET_NULL,
-        related_name="duel_affl_team"
+        related_name="affl_team"
     )
 
     class Meta:

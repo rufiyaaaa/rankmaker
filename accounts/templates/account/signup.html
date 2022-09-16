@@ -8,32 +8,87 @@
 {% block toplink %}{% url 'entrance:index' %}{% endblock %}
 
 {% block center %}
-    <div class="text-center row justify-content-center">
-        <h1>新規登録</h1>
-        <div class="col-xl-3 col-md-2"></div>
-        <div class="col-xl-6 col-md-8 border p-3">
-            <form method="post" class="mb-0"  action="{% url 'account_signup' %}">
-                {% csrf_token %}
-                <div class="text-start">
-                    {% bootstrap_form form %}
+<div class="text-center row justify-content-center" xmlns="http://www.w3.org/1999/html">
+    <h1>新規登録</h1>
+    <div class="col-xl-3 col-md-2"></div>
+    <div class="col-xl-6 col-md-8 border p-3">
+        <form method="post" class="mb-0" action="{% url 'account_signup' %}">
+            {% csrf_token %}
+            <div class="text-start">
+                {% bootstrap_form form %}
 
 
-                    {% if redirect_field_value %}
-                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
-                    {% endif %}
+                {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+                {% endif %}
+            </div>
+            <div class="px-4 py-1 mb-2 text-center">
+                <h6>プライバシーポリシー（個人情報保護方針）</h6>
+                <div class="border text-start small overflow-auto" style="height:300px;">
+                    <p>
+                        ランクメーカー（以下、「当サービス」という。）は，ユーザーの個人情報について以下のとおりプライバシーポリシー（以下、「本ポリシー」という。）を定めます。本ポリシーは、当サービスがどのような個人情報を取得し、どのように利用・共有するか、ユーザーがどのようにご自身の個人情報を管理できるかをご説明するものです。
+                    </p>
+                    <p>
+                    <h6>【１．個人情報の取得方法】</h6>
+                    当サービスはユーザーが利用登録をするとき、メールアドレスなど個人を特定できる情報を取得させていただきます。
+                    お問い合わせフォームやコメントの送信時にも、メールアドレスを取得させていただきます。
+                    </p>
+
+                    <h6>【２．個人情報の利用目的】</h6>
+                    <p>
+                        取得した閲覧履歴・利用履歴等の情報を分析し、今後の開発方針を決定するために利用します。
+                    </p>
+
+                    <h6>【３．個人データを安全に管理するための措置】</h6>
+                    <p>
+                        当サービスは個人情報を不正なアクセス・改ざん・漏えい・滅失及び毀損から保護するよう努めてまいります。
+                    </p>
+                    <h6>【４．個人データの第三者提供について】</h6>
+                    <p>
+                        当サービスは法令及びガイドラインに別段の定めがある場合を除き、同意を得ないで第三者に個人情報を提供することは致しません。
+                    </p>
+                    <h6>【５．保有個人データの開示、訂正】</h6>
+                    <p>
+                        当サービスは本人から個人情報の開示を求められたときには、遅滞なく本人に対しこれを開示します。個人情報の利用目的の通知や訂正、追加、削除、利用の停止、第三者への提供の停止を希望される方は以下の手順でご請求ください。
+                    </p>
+                    <p>
+                        メールアドレス：rankmakerinfo@gmail.com
+                    </p>
+                    <h6>【６．個人情報取り扱いに関する相談や苦情の連絡先】</h6>
+                    <p>
+                        当サービスの個人情報の取り扱いに関するご質問やご不明点、苦情、その他のお問い合わせはお問い合わせフォームよりご連絡ください。
+                    </p>
+                    <h6>【７．SSL（Secure Socket Layer）について】</h6>
+                    <p>
+                        当サービスのWebサイトはSSLに対応しており、WebブラウザとWebサーバーとの通信を暗号化しています。ユーザーが入力する氏名や住所、電話番号などの個人情報は自動的に暗号化されます。
+                    </p>
+                    <h6>【８．cookieについて】</h6>
+                    <p>
+                        cookieとは、WebサーバーからWebブラウザに送信されるデータのことです。Webサーバーがcookieを参照することでユーザーのパソコンを識別でき、効率的に当サービスWebサイトを利用することができます。当サービスWebサイトがcookieとして送るファイルは、個人を特定するような情報は含んでおりません。
+                        お使いのWebブラウザの設定により、cookieを無効にすることも可能です。
+                    </p>
+                    <h6>【９．プライバシーポリシーの制定日及び改定日】</h6>
+                    <p>
+                        制定：2022年9月5日
+                    </p>
+                    <h6>【１０．免責事項】</h6>
+                    <p>
+                        当サービスWebサイトに掲載されている情報の正確性には万全を期していますが、利用者が当サービスWebサイトの情報を用いて行う一切の行為に関して、一切の責任を負わないものとします。
+                        当サービスは、利用者が当サービスWebサイトを利用したことにより生じた利用者の損害及び利用者が第三者に与えた損害に関して、一切の責任を負わないものとします。
+                    </p>
+                    <h6>【１１．著作権・肖像権】</h6>
+                    <p>
+                        当サービスWebサイト内の文章や画像、すべてのコンテンツは著作権・肖像権等により保護されています。無断での使用や転用は禁止されています。</p>
+                    </p>
+                    <h6>【１２．リンク】</h6>
+                    <p>
+                        当サービスWebサイトへのリンクは、自由に設置していただいて構いません。ただし、Webサイトの内容等によってはリンクの設置をお断りすることがあります。
+                    </p>
                 </div>
-                <div class="px-4 py-1 mb-2 text-center">
-                    <h6>注意事項</h6>
-                    <div class="border text-start small">
-                        <p>
-                            本サービスではメールアドレスを除く個人情報を積極的に取得しません。 チーム名、メンバー名等の自由記入欄に個人情報を登録しないようご注意ください。<br>
-                            登録されたデータについては、サイトの運営、維持、管理、その他のご案内のために利用する場合があります。また、これらのデータを本人の同意なく第三者に提供することはありません。
-                        </p>
-                    </div>
-                </div>
-                <button class="btn btn-primary" type="submit">注意事項に同意して登録</button>
-            </form>
-        </div>
-        <div class="col-xl-3 col-md-2"></div>
+            </div>
+            <button class="btn btn-primary" type="submit">上記内容に同意して登録</button>
+        </form>
     </div>
+    <div class="col-xl-3 col-md-2"></div>
+</div>
 {% endblock %}
