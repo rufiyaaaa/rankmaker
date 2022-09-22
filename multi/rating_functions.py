@@ -5,14 +5,13 @@ from .models import Duel, Rating, Team, Player, Game, Participant
 
 def eq_rating(old, even):
     new = [0.0, 0.0]
-    mu_01 = 1 / (1 + 10 ** ((old[0] - old[1]) / 400))
-    mu_10 = 1 / (1 + 10 ** ((old[1] - old[0]) / 400))
+    mu_ba = 1 / (1 + 10 ** ((old[0] - old[1]) / 400))
     if even:
-        new[0] = old[0] + 30 * (0.5 - mu_01)
-        new[1] = old[1] + 30 * (0.5 - mu_10)
+        new[0] = old[0] + 30 * (0.5 - mu_ba)
+        new[1] = old[1] + 30 * (0.5 - mu_ba)
     else:
-        new[0] = old[0] + 30 * (1 - mu_01)
-        new[1] = old[1] - 30 * mu_10
+        new[0] = old[0] + 30 * mu_ba
+        new[1] = old[1] - 30 * mu_ba
     return new
 
 
