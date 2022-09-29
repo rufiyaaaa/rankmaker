@@ -2,7 +2,7 @@ import logging
 import datetime
 from django import forms
 from django.http import HttpResponse, HttpResponseRedirect
-
+from rankmaker.settings_common import TIME_ZONE
 from django.urls import reverse_lazy
 from django.utils.timezone import make_aware
 from django.views import generic
@@ -13,6 +13,7 @@ from .rating_functions import put_badge, separate, separate_1on1, refresh_rating
 from .models import Affiliation, Player, Game, Duel, Rating, Team, Participant, Notice
 from .forms import GameCreate1on1Form, GameCreateForm, PlayerCreateForm, TeamCreateForm, TeamConfigForm, BatchPlayerCreateForm, TeamChoiceForm
 from django.core.exceptions import ValidationError
+from . import graph
 
 logger = logging.getLogger(__name__)
 
@@ -294,6 +295,21 @@ class GameDeleteView(LoginRequiredMixin, generic.DeleteView):
         return super().delete(request, *args, **kwargs)
 
 
+class SUGameListView(LoginRequiredMixin, generic.ListView):
+    model = Game
+    template_name = 'multi/game_list.html'
+
+    def get_queryset(self):
+        game_list = Game.objects.all().order_by('-date')
+        return game_list
+
+    def get_context_data(self, **kwargs):
+        affl = Affiliation.objects.get(user=self.request.user)
+        context = super().get_context_data(**kwargs)
+        context['team'] = affl.team
+        return context
+
+
 class PlayerListView(LoginRequiredMixin, generic.ListView):
     model = Player
     template_name = 'multi/player_list.html'
@@ -319,8 +335,21 @@ class PlayerDetailView(LoginRequiredMixin, generic.DetailView):
         affl = Affiliation.objects.get(user=self.request.user)
         context = super().get_context_data(**kwargs)
         context['team'] = affl.team
-        context['participant_set'] = Participant.objects.filter(player=self.object).order_by('game__date')
+        participant_set = Participant.objects.filter(player=self.object).order_by('game__date')[:15]
+        context['participant_set'] = participant_set
+
+        # グラフオブジェクト
+        x = [x.game.date.astimezone(datetime.timezone(datetime.timedelta(hours=9))) for x in participant_set]           # X軸データ
+        y = [y.new_appr for y in participant_set]        # Y軸データ
+        chart = graph.plot_graph(x, y)          # グラフ作成
+
+        # 変数を渡す
+        context['chart'] = chart
         return context
+
+    # get処理
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
 
 class BatchPlayerCreateView(LoginRequiredMixin, generic.FormView):
@@ -475,7 +504,15 @@ class TeamConfigView(LoginRequiredMixin, generic.UpdateView):
         return context
 
     def form_valid(self, form):
-        messages.success(self.request, 'チーム設定を更新しました。')
+        # offset_termに変更があった場合自チームのGame全てに対してneed_to_recalc=Trueを設定する
+        old_data = self.object.tracker.saved_data['offset_term']
+        if old_data != self.object.offset_term:
+            games = Game.objects.filter(team=self.object)
+            games.update(need_to_recalc=True)
+            messages.success(self.request, 'チーム設定を更新しました。レーティングの再計算をしてください')
+        else:
+            messages.success(self.request, 'チーム設定を更新しました。')
+
         return super().form_valid(form)
 
     def form_invalid(self, form):
@@ -561,4 +598,4 @@ def recalc(request, pk):
         put_badge(game)
 
         messages.success(request, "再計算しました。")
-    return redirect('multi:game_list')
+    return redirect(request.META["HTTP_REFERER"])

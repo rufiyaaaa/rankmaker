@@ -39,7 +39,7 @@
         </form>
         {% endif %}
         {% for pl in game.participant_game.all|dictsort:"rank" %}
-        {{ pl.rank }}位:{{pl.player.name}}({{pl.new_rating|floatformat:0}}){% if not forloop.last %}、{% endif %}
+        {{ pl.rank }}位:{{pl.player.name}}({{pl.new_appr|floatformat:0}}){% if not forloop.last %}、{% endif %}
         {% endfor %}
     </a>
 </div>

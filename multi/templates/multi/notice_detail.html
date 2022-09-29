@@ -9,27 +9,29 @@
 
 {% block contents %}
 
-        <h4 class="bg-secondary text-white p-1">{{ object.title }}</h4>
-        <div class="row">
-            <div class="col-3">
-                <strong>公開日時</strong>
-            </div>
-            <div class="col-9">
-                {{ object.release_date }}
-            </div>
-        </div>
+<h4 class="bg-secondary text-white p-1">{{ object.title }}</h4>
+<div class="row">
+    <div class="col-3">
+        <strong>公開日時</strong>
+    </div>
+    <div class="col-9">
+        {{ object.release_date }}
+    </div>
+</div>
 
-        <hr class="my-1">
+<hr class="my-1">
 
-        <div class="row">
-            <div class="col-3">
-                <strong>本文</strong>
-            </div>
-            <div class="col-9">
-                {{ object.text|linebreaksbr }}
-            </div>
-        </div>
-        <hr class="my-1">
+<div class="row">
+    <div class="col-3">
+        <strong>本文</strong>
+    </div>
+    <div class="col-9">
+        {% autoescape off %}
+        {{ object.text|linebreaksbr }}
+        {% endautoescape %}
+    </div>
+</div>
+<hr class="my-1">
 
-        <a href="{{request.META.HTTP_REFERER}}" class="btn btn-primary mt-3">戻る</a>
+<a href="{{request.META.HTTP_REFERER}}" class="btn btn-primary mt-3">戻る</a>
 {% endblock %}

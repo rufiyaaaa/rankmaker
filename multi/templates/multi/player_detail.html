@@ -58,23 +58,28 @@
 <div class="row">
     <div class="col-3">
         <strong>レーティング履歴</strong>
+        <strong>(直近１５対戦)</strong>
     </div>
     <div class="col-9">
 
         {% for record in participant_set %}
         {% if forloop.counter == 1 %}{% else %}
-        <hr class="my-1">
+
         {% endif %}
 
         <a href="{% url 'multi:game_detail' record.game.pk %}" class="text-decoration-none">
             <div class="row gx-0">
                 <div class="col-sm-6 col-12">{{ record.game.date }}</div>
                 <div class="col-sm-2 col-4 text-end">{{ record.rank }}位</div>
-                <div class="col-sm-4 col-8 text-end">{{ record.new_rating|floatformat:2 }} ({% if record.rating_diff >= 0 %}+{% endif %}{{ record.rating_diff|floatformat:2 }})</div>
+                <div class="col-sm-4 col-8 text-end">{{ record.new_appr|floatformat:2 }} ({% if record.appr_diff >= 0 %}+{% endif %}{{ record.appr_diff|floatformat:2 }})</div>
             </div>
         </a>
+                <hr class="my-1">
         {% endfor %}
+
     </div>
+
+	<img src="data:image/png;base64,{{ chart | safe }}">
 </div>
 <hr class="my-1">
 

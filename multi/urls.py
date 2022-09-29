@@ -8,6 +8,7 @@ urlpatterns = [
     path('ranking/', views.RankingView.as_view(), name="ranking"),
     path('ranking-ext/<page_id>/', views.RankingExtView.as_view(), name="ranking_ext"),
     path('game-list/', views.GameListView.as_view(), name="game_list"),
+    path('su-game-list/', views.SUGameListView.as_view(), name="su_game_list"),
     path('game-detail/<int:pk>', views.GameDetailView.as_view(), name="game_detail"),
     path('game-create/', views.GameCreateView.as_view(), name="game_create"),
     path('game-create-1on1/', views.GameCreate1on1View.as_view(), name="game_create_1on1"),

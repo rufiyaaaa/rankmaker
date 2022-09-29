@@ -66,8 +66,6 @@
         <hr>
 
         {% if object.page_id %}
-
-
         <div class="row">
             <div class="col-4">
                 <strong>非会員向けリンク</strong>
@@ -80,6 +78,16 @@
         </div>
         <hr>
         {% endif %}
+
+        <div class="row">
+            <div class="col-4">
+                <strong>暫定レーティング期間</strong>
+            </div>
+            <div class="col-8">
+                {{ object.offset_term }}試合
+            </div>
+        </div>
+        <hr>
 
         <a href="{% url 'multi:team_config' %}" class="btn btn-primary mt-0 mb-3">編集</a>
 

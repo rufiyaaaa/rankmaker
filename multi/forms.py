@@ -5,7 +5,6 @@ import datetime
 from dateutil import parser
 
 from django import forms
-
 from .models import Game, Player, Affiliation, Team, Participant
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
@@ -57,10 +56,15 @@ class TeamConfigForm(forms.ModelForm):
         help_text='対戦結果登録時、初めに表示される入力方式を選択できます',
         choices=((True, '1対1対戦'), (False, '多人数対戦'))
     )
+    offset_term = forms.ChoiceField(
+        label='暫定レーティング期間',
+        help_text='加入したばかりのプレイヤーには暫定レーティングが設定されます。暫定レーティングを適用する期間を設定してください。<br>この値を変更するとレーティングの再計算が必要になります。',
+        choices=((20, '短め(約20対戦)'), (50, '普通(約50対戦)'), (100, '長め(約100対戦)'), (1, 'なし(非推奨)'))
+    )
 
     class Meta:
         model = Team
-        fields = ('name', 'description', 'page_id', 'one_on_one')
+        fields = ('name', 'description', 'page_id', 'one_on_one', 'offset_term')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -87,6 +91,12 @@ class TeamConfigForm(forms.ModelForm):
             help_text='対戦結果登録時、初めに表示される入力方式を選択できます',
             choices=((True, '1対1対戦'), (False, '多人数対戦')),
             initial=team.one_on_one
+        )
+        self.fields['offset_term'] = forms.ChoiceField(
+            label='暫定レーティング期間',
+            help_text='加入したばかりのプレイヤーには暫定レーティングが設定されます。暫定レーティングを適用する期間を設定してください。<br>この値を変更するとレーティングの再計算が必要になります。',
+            choices=((20, '短め(約20対戦)'), (50, '普通(約50対戦)'), (100, '長め(約100対戦)'), (1, 'なし(非推奨)')),
+            initial=team.offset_term
         )
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
@@ -268,3 +278,5 @@ class TeamChoiceForm(forms.ModelForm):
         team_pk = input_data.get('team')
         input_data['team'] = Team.objects.get(pk=team_pk)
         return input_data
+
+

@@ -42,9 +42,15 @@
                     {% for participant in participants %}
                     {% if forloop.counter == 1 %}{% else %}<hr class="my-1">{% endif %}
                     <div class="col-2">{{ participant.rank }}位</div>
-                    <div class="col-sm-4 col-10">{{ participant.player.name }}</div>
-                    <div class="col-sm-6 col-12 text-end pe-1">{{ participant.old_rating|floatformat:2 }}→{{ participant.new_rating|floatformat:2 }}
-                        ({% if participant.rating_diff >= 0 %}+{% endif %}{{ participant.rating_diff|floatformat:2 }})</div>
+                    <div class="col-sm-4 col-10">
+                        <a href="{% url 'multi:player_detail' participant.player.pk %}"  class="text-decoration-none">
+                            {{ participant.player.name }}
+                        </a>
+                    </div>
+                    <div class="col-sm-6 col-12 text-end pe-1">
+                        {{ participant.old_appr|floatformat:2 }}→{{ participant.new_appr|floatformat:2 }}
+                        ({% if participant.appr_diff >= 0 %}+{% endif %}{{ participant.appr_diff|floatformat:2 }})
+                    </div>
 
                     {% endfor %}
                 </div>

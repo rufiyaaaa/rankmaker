@@ -26,7 +26,11 @@
                 {% for player in ranking %}
                 <tr>
                     <th>{{ forloop.counter }}</th>
-                    <td>{{ player.name }}</td>
+                    <td>
+                        <a href="{% url 'multi:player_detail' player.pk %}"  class="text-decoration-none">
+                            {{ player.name }}
+                        </a>
+                    </td>
                     <td>{{ player.ltst_rating|floatformat:2 }}</td>
                 </tr>
                 {% empty %}

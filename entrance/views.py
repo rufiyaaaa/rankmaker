@@ -17,6 +17,10 @@ class RatingSystemView(generic.TemplateView):
     template_name = "entrance/rating_system.html"
 
 
+class PrivacyPolicyView(generic.TemplateView):
+    template_name = "entrance/privacy_policy.html"
+
+
 class InquiryView(generic.FormView):
     template_name = "entrance/inquiry.html"
     form_class = InquiryForm

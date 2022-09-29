@@ -5,7 +5,7 @@ from django.utils.timezone import make_aware
 
 from accounts.models import CustomUser
 from django.db import models
-
+from model_utils import FieldTracker
 from django.core.validators import MinLengthValidator, RegexValidator
 
 # Create your models here.
@@ -41,6 +41,15 @@ class Team(models.Model):
             RegexValidator(r'^[a-zA-Z0-9]*$', '使用可能な文字は半角英数字のみです')
         ]
     )
+    offset_term = models.IntegerField(
+        verbose_name="ボーナスタイム",
+        blank=None,
+        null=None,
+        default=1,
+        help_text='レーティングがぐんぐん上昇する「ボーナスタイム」の継続期間（試合数）を選択します。<br>この値を変更するとレーティングの再計算が必要になります。'
+    )
+
+    tracker = FieldTracker()
 
     class Meta:
         verbose_name_plural = 'Team'
@@ -55,7 +64,7 @@ class Player(models.Model):
     team = models.ForeignKey(Team, verbose_name='所属', on_delete=models.CASCADE)
     name = models.CharField(verbose_name='プレイヤー', max_length=10000)
     inactive = models.BooleanField(verbose_name='引退', default=False, blank=True)
-    ltst_rating = models.FloatField(verbose_name='最新レーティング', default=0.0)
+    ltst_rating = models.FloatField(verbose_name='最新の見かけレーティング', default=1000.0)
 
     class Meta:
         verbose_name_plural = 'Player'
@@ -64,23 +73,19 @@ class Player(models.Model):
         return Participant.objects.filter(player=self).count()
 
     def latest_rating(self, date):  # Participantを探って最新のレーティングを見つける
-        records = Participant.objects.filter(player=self)
-        date_cursor = date
-        latest_participant = records.first()
-        for record in records:
-            if record.game.date < date_cursor:
-                date_cursor = record.game.date
-                latest_participant = record
-
-        if date_cursor == date:
-            return 1500.0
+        record = Participant.objects.filter(player=self).filter(game__date__lt=date).order_by('-game__date').first()
+        if record:
+            return float(record.new_rating)
         else:
-            for record in records:
-                if record.game.date < date:
-                    if date_cursor < record.game.date:
-                        date_cursor = record.game.date
-                        latest_participant = record
-            return float(latest_participant.new_rating)
+            return 1500.0
+
+    def latest_appr(self, date):  # Participantを探って最新のレーティングを見つける
+        record = Participant.objects.filter(player=self).filter(game__date__lt=date).order_by('-game__date__lt').first()
+
+        if record:
+            return float(record.new_appr)
+        else:
+            return 1000.0
 
     def now_rating(self):
         return self.latest_rating(make_aware(datetime.now()))
@@ -142,7 +147,9 @@ class Participant(models.Model):
     new_rating = models.FloatField(verbose_name='対戦後のレーティング', default=1500.0)
     old_rating = models.FloatField(verbose_name='対戦前のレーティング', default=1500.0)
     rating_diff = models.FloatField(verbose_name='レーティング変化', default=0.0)
-    appr_rating = models.IntegerField(verbose_name='修正レーティング', default=0)
+    new_appr = models.FloatField(verbose_name='対戦後のレーティング', default=1500.0)
+    old_appr = models.FloatField(verbose_name='対戦前のレーティング', default=1500.0)
+    appr_diff = models.FloatField(verbose_name='レーティング変化', default=0.0)
 
     class Meta:
         verbose_name_plural = 'Participants'

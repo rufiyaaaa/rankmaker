@@ -33,6 +33,7 @@ def calc_game_rating(game=Game()):
     participant_set = game.participant_game.all()   # gameに紐づく参加者を列挙
     duel_set = game.duel_game.all()                 # gameに紐づくduelを列挙
     rating_set_master = Rating.objects.none()       # rating_set_masterは空っぽ
+    team = game.team
     for duel in duel_set:                           # 関連するduelに対して、関連するratingを取得してrating_set_masterに追加しようとしている？
         rating_set_master = rating_set_master | duel.rating_duel.all()
     for participant in participant_set:
@@ -44,7 +45,24 @@ def calc_game_rating(game=Game()):
         participant.new_rating = old_rating + rating_diff
         participant.old_rating = old_rating
         participant.rating_diff = rating_diff
-        participant.player.ltst_rating = participant.new_rating
+
+        # 補正レーティング計算
+        offset_term = team.offset_term
+        participation_number = Participant.objects.filter(player=participant.player).filter(game__date__lt=participant.game.date).count() + 1
+        if participation_number > offset_term:
+            offset_value = 0.0
+        else:
+            offset_value = (2*(offset_term+1)-participation_number-1)*participation_number*500\
+                       /(offset_term * (offset_term + 1))-500
+        participant.new_appr = participant.new_rating + offset_value
+        ones_old_participations = Participant.objects.filter(player=participant.player).filter(game__date__lt=participant.game.date)
+        if ones_old_participations:
+            participant.old_appr = ones_old_participations.order_by('game__date').last().new_appr
+        else:
+            participant.old_appr = 1000.0
+        participant.appr_diff = participant.new_appr - participant.old_appr
+
+        participant.player.ltst_rating = participant.new_appr
         participant.save()
         participant.player.save()
 
@@ -129,25 +147,6 @@ def put_badge(game_calculated):
         if len(competitors & comparable_competitors) != 0:
             game.need_to_recalc = True
             game.save()
-
-
-# def participant_update(rank_data, game=Game()):
-#     old_participants = game.participant_game.all()
-#     check_list = []
-#     for participant in old_participants:
-#         check_list.append(participant.player)
-#     for result in rank_data:
-#         player = Player.objects.get(pk=result[0])
-#         if old_participants.filter(player=player).count() == 1:
-#             record = old_participants.get(player=player)
-#             record.rank = result[1]
-#             record.save()
-#             check_list.remove(player)
-#         else:
-#             participant_registration(result, game)
-#     if len(check_list) != 0:
-#         for player in check_list:
-#             old_participants.get(player=player).delete()
 
 
 def separate(data, game=Game()):
