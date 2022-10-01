@@ -42,6 +42,11 @@ LOGGING = {
             'handlers': ['file'],
             'level': 'INFO',
         },
+        # accountsアプリケーションが利用するロガー
+        'accounts': {
+            'handlers': ['file'],
+            'level': 'INFO',
+        },
     },
 
     # ハンドラの設定

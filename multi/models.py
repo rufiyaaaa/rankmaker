@@ -45,7 +45,7 @@ class Team(models.Model):
         verbose_name="ボーナスタイム",
         blank=None,
         null=None,
-        default=1,
+        default=50,
         help_text='レーティングがぐんぐん上昇する「ボーナスタイム」の継続期間（試合数）を選択します。<br>この値を変更するとレーティングの再計算が必要になります。'
     )
 
