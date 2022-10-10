@@ -26,7 +26,7 @@ urlpatterns = [
     path('multi/', include('multi.urls')),
     path('', include('entrance.urls')),
     path('accounts/', include('allauth.urls')),
-    path("^ads\.txt", TemplateView.as_view(template_name='ads.txt', content_type='text/plain')),
+    path("ads.txt", TemplateView.as_view(template_name='ads.txt', content_type='text/plain')),
 ]
 
 # 開発サーバーでメディアを配信できるようにする設定
