@@ -16,16 +16,17 @@ Including another URLconf
 from django.contrib import admin
 from django.contrib.staticfiles.urls import static
 from django.urls import path, include
+from django.views.generic.base import TemplateView
 
 from . import settings_common, settings_dev
 
 urlpatterns = [
-    # path('admin/', admin.site.urls),
     path('kanri/', admin.site.urls),
     path('duel/', include('duel.urls')),
     path('multi/', include('multi.urls')),
     path('', include('entrance.urls')),
     path('accounts/', include('allauth.urls')),
+    path("^ads\.txt", TemplateView.as_view(template_name='ads.txt', content_type='text/plain')),
 ]
 
 # 開発サーバーでメディアを配信できるようにする設定
