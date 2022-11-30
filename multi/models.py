@@ -121,6 +121,7 @@ class Game(models.Model):
     one_on_one = models.BooleanField(verbose_name="1対1対戦", default=False, blank=True)
     need_to_recalc = models.BooleanField(verbose_name="要再計算", default=False)
     memo = models.TextField(verbose_name="コメント", blank=True)
+    tracker = FieldTracker()
 
     class Meta:
         verbose_name_plural = 'Game'

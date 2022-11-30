@@ -188,6 +188,14 @@ class GameCreateForm(forms.ModelForm):
         return input_data
 
 
+class BatchGameCreateForm(forms.ModelForm):
+    text = forms.CharField(label='一括入力', widget=forms.Textarea, max_length=100000)
+
+    class Meta:
+        model = Game
+        fields = ()
+
+
 class GameCreate1on1Form(forms.ModelForm):
     name = forms.CharField(
         label='対戦タイトル',

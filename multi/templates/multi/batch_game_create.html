@@ -1,0 +1,24 @@
+{% extends 'multi/center.html' %}
+{% load static %}
+
+{% block title %}対戦結果追加 | ランクメーカー{% endblock %}
+
+{% block toplink %}{% url 'multi:home' %}{% endblock %}
+
+{% block active_game_list %}active{% endblock %}
+
+{% block contents %}
+
+        <h4 class="bg-secondary text-white p-1">対戦一括追加</h4>
+        <p>複数の対戦を一括で追加します。対戦と対戦の間には空行を作成してください。</p>
+        <div class="row gx-0">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {% include 'multi/form_fields_loop.html' %}
+                <button class="btn btn-primary" type="submit">追加</button>
+                <a href="{% url 'multi:game_create' %}">＞一件ずつ追加する場合はこちら</a>
+            </form>
+        </div>
+
+        {% endblock %}

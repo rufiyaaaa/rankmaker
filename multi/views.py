@@ -11,9 +11,11 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .rating_functions import put_badge, separate, separate_1on1, refresh_rating
 from .models import Affiliation, Player, Game, Duel, Rating, Team, Participant, Notice
-from .forms import GameCreate1on1Form, GameCreateForm, PlayerCreateForm, TeamCreateForm, TeamConfigForm, BatchPlayerCreateForm, TeamChoiceForm
+from .forms import GameCreate1on1Form, GameCreateForm, PlayerCreateForm, TeamCreateForm, TeamConfigForm,\
+    BatchPlayerCreateForm, BatchGameCreateForm, TeamChoiceForm
 from django.core.exceptions import ValidationError
 from . import graph
+from dateutil.parser import parser
 
 logger = logging.getLogger(__name__)
 
@@ -162,7 +164,7 @@ class GameCreate1on1View(LoginRequiredMixin, generic.CreateView):  # 本丸
         game.date = make_aware(game.date)
         game.save()
 
-        # 参加者とその順位から、Duel、Participantを作成
+        # 参加者とその順位から、Duel、Participantを作成。参加者と順位は辞書型で、pkと順位の数字
         separate_1on1(form.data, game)
 
         # レーティングの更新処理をする。キーとなる引数は、Game.date
@@ -182,6 +184,51 @@ class GameCreate1on1View(LoginRequiredMixin, generic.CreateView):  # 本丸
 
     def get_success_url(self):
         return reverse_lazy('multi:game_list')
+
+
+class BatchGameCreateView(LoginRequiredMixin, generic.FormView):
+    template_name = 'multi/batch_game_create.html'
+    form_class = BatchGameCreateForm
+    success_url = reverse_lazy('multi:game_list')
+
+    def form_valid(self, form):  # formのバリデーションに問題がなければ実行
+        affl = Affiliation.objects.get(user=self.request.user)
+        lines = form.cleaned_data['text'].splitlines()
+        lines.append('')
+        line_count = 0
+        player_temp = ()
+        rank_data = {}
+        game = Game()
+        for line in lines:
+            if line == "":
+                game.team = affl.team
+                game.save()         # ここで各種データがきちんと入っているかを確認したい
+
+                # 参加者とその順位から、Duel、Participantを作成
+                separate(rank_data, game)
+                # レーティングの更新処理をする。キーとなる引数は、Game.date
+                refresh_rating(game)
+                # 更新が必要なGameにバッヂ付けをする
+                put_badge(game)
+
+                line_count = 0
+                rank_data = {}
+                game = Game()
+            else:
+                if line_count == 0:
+                    game.name = line
+                elif line_count == 1:
+                    game.date = parser().parse(line)    # データの形が合っているかどうかはひとまず無視
+                else:
+                    player_temp = line.split(',')
+                    player_id = Player.objects.filter(team=affl.team).get(name=player_temp[0]).id
+                    rank_data[str(player_id)] = player_temp[1]
+
+                line_count = line_count + 1
+
+        msg = str(len(lines)) + "名のメンバーを追加しました。"
+        messages.success(self.request, msg)
+        return super().form_valid(form)
 
 
 class GameUpdateView(LoginRequiredMixin, generic.UpdateView):

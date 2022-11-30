@@ -11,6 +11,7 @@ urlpatterns = [
     path('su-game-list/', views.SUGameListView.as_view(), name="su_game_list"),
     path('game-detail/<int:pk>', views.GameDetailView.as_view(), name="game_detail"),
     path('game-create/', views.GameCreateView.as_view(), name="game_create"),
+    path('batch-game-create/', views.BatchGameCreateView.as_view(), name="batch_game_create"),
     path('game-create-1on1/', views.GameCreate1on1View.as_view(), name="game_create_1on1"),
     path('game-update/<int:pk>/', views.GameUpdateView.as_view(), name="game_update"),
     path('game-update-1on1/<int:pk>/', views.GameUpdate1on1View.as_view(), name="game_update_1on1"),
