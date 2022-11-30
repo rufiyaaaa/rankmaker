@@ -14,30 +14,34 @@
 
 {% block contents %}
 
-        <h4 class="bg-secondary text-white p-1">{{ team.name }} 最新ランキング</h4>
-        <div>
-            <p class="small border p-2">チーム説明：{{ team.description }}</p>
-            <table class="table">
-                <tr>
-                    <th>順位</th>
-                    <th>名前</th>
-                    <th>レーティング</th>
-                </tr>
+<h4 class="bg-secondary text-white p-1">{{ team.name }} 最新ランキング</h4>
+<div>
+    <p class="small border p-2">チーム説明：{{ team.description }}</p>
+    <table class="table">
+        <tr>
+            <th>順位</th>
+            <th>名前</th>
+            <th>レーティング</th>
+        </tr>
 
-                {% for player in ranking %}
-                <tr>
-                    <th>{{ forloop.counter }}</th>
-                    <td>{{ player.name }}</td>
-                    <td>{{ player.ltst_rating|floatformat:2 }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="3">メンバーが登録されていません。</td>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
-        <p class="small text-end"><a href="{% url 'entrance:index' %}">＞トップページに戻る</a></p>
+        {% for player in ranking %}
+        <tr>
+            <th>{{ forloop.counter }}</th>
+            <td>
+                <a href="{% url 'multi:player_detail' player.pk %}" class="text-decoration-none">
+                    {{ player.name }}
+                </a>
+            </td>
+            <td>{{ player.ltst_rating|floatformat:2 }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">メンバーが登録されていません。</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+<p class="small text-end"><a href="{% url 'entrance:index' %}">＞トップページに戻る</a></p>
 
 
 {% endblock %}

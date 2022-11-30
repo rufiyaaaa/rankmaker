@@ -88,7 +88,7 @@ class GameListView(LoginRequiredMixin, generic.ListView):
         return context
 
 
-class GameDetailView(LoginRequiredMixin, generic.DetailView):
+class GameDetailView(generic.DetailView):
     model = Game
     template_name = 'multi/game_detail.html'
 
@@ -374,14 +374,14 @@ class PlayerListView(LoginRequiredMixin, generic.ListView):
         return context
 
 
-class PlayerDetailView(LoginRequiredMixin, generic.DetailView):
+class PlayerDetailView(generic.DetailView):
     model = Player
     template_name = 'multi/player_detail.html'
 
     def get_context_data(self, **kwargs):
-        affl = Affiliation.objects.get(user=self.request.user)
+        # affl = Affiliation.objects.get(user=self.request.user)
         context = super().get_context_data(**kwargs)
-        context['team'] = affl.team
+        # context['team'] = affl.team
         participant_set = Participant.objects.filter(player=self.object).order_by('game__date')[:15]
         context['participant_set'] = participant_set
 
